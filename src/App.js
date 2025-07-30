@@ -10,7 +10,7 @@ export default function BakeryPlanner() {
     .reduce((sum, i) => sum + i.percent, 0);
 
   const [useDoughInput, setUseDoughInput] = useState(false);
-  const [inputValue, setInputValue] = useState(4000); // grams
+  const [inputValue, setInputValue] = useState(1000); // grams
 
   // Total dough weight vs flour weight
   const doughBaseGrams = useDoughInput
