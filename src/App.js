@@ -9,9 +9,9 @@ export default function BakeryPlanner() {
     .filter(i => i.percent)
     .reduce((sum, i) => sum + i.percent, 0);
 
-  const [useDoughInput, setUseDoughInput] = useState(true);  // Corrected inverted boolean state
-  const [inputValue, setInputValue] = useState(4000); // grams
-  const [ingredientBrands, setIngredientBrands] = useState({}); // Store selected brands for ingredients
+  const [useDoughInput, setUseDoughInput] = useState(true);
+  const [inputValue, setInputValue] = useState(4000);
+  const [ingredientBrands, setIngredientBrands] = useState({});
 
   // Total dough weight vs flour weight
   const doughBaseGrams = useDoughInput
@@ -21,8 +21,8 @@ export default function BakeryPlanner() {
   const getCostPerKg = (ingredientName, brand) => {
     const ingredient = prices[ingredientName];
     if (ingredient) {
-      // If no brand, return the default price (if available)
-      return brand ? ingredient[brand] : ingredient[""];
+      // If no brand selected, use the first brand as default
+      return brand ? ingredient[brand] : ingredient[Object.keys(ingredient)[0]];
     }
     return 0;
   };
@@ -40,26 +40,25 @@ export default function BakeryPlanner() {
     let grams = 0;
     let cost = 0;
 
-    // Handle ingredients based on per unit weight (e.g., butter sticks)
     if (i.perUnitGrams) {
       const units = doughBaseGrams / recipe.itemWeightGrams;
       grams = i.perUnitGrams * units;
-      const brand = ingredientBrands[i.name];
+      const brand = ingredientBrands[i.name] || Object.keys(prices[i.name])[0]; // Default to the first brand
       cost = getCostPerKg(i.name, brand) * grams / 1000;
     } else if (i.fixedGrams) {
       grams = i.fixedGrams;
-      const brand = ingredientBrands[i.name];
+      const brand = ingredientBrands[i.name] || Object.keys(prices[i.name])[0]; // Default to the first brand
       cost = getCostPerKg(i.name, brand) * grams / 1000;
     } else if (i.percent) {
       grams = (i.percent / 100) * doughBaseGrams;
-      const brand = ingredientBrands[i.name];
+      const brand = ingredientBrands[i.name] || Object.keys(prices[i.name])[0]; // Default to the first brand
       cost = getCostPerKg(i.name, brand) * grams / 1000;
     }
 
     return {
       ...i,
       grams,
-      cost: cost.toFixed(2) || "0.00"  // Ensuring no null cost
+      cost: cost.toFixed(2) || "0.00"
     };
   });
 
@@ -72,7 +71,7 @@ export default function BakeryPlanner() {
       <label>
         <input
           type="checkbox"
-          checked={!useDoughInput}  // Inverted boolean as requested
+          checked={!useDoughInput}
           onChange={() => setUseDoughInput(!useDoughInput)}
         />
         &nbsp; Use Total Dough Weight
@@ -80,7 +79,7 @@ export default function BakeryPlanner() {
 
       <div style={{ marginTop: "0.5rem" }}>
         <label>
-          {!useDoughInput ? "Total Dough Weight (g):" : "Flour Base (g):"}  {/* Corrected the logic for label */}
+          {!useDoughInput ? "Total Dough Weight (g):" : "Flour Base (g):"}
         </label>
         <input
           type="number"
@@ -111,11 +110,14 @@ export default function BakeryPlanner() {
               <td>
                 {(i.name === "Butter" || i.name === "Salted butter (filling)") && (
                   <select
-                    value={ingredientBrands[i.name] || "Anchor"}
+                    value={ingredientBrands[i.name] || Object.keys(prices[i.name])[0]} // Default to first brand
                     onChange={e => handleBrandChange(i.name, e.target.value)}
                   >
-                    <option value="Anchor">Anchor</option>
-                    <option value="Gold">Gold</option>
+                    {Object.keys(prices[i.name]).map(brand => (
+                      <option key={brand} value={brand}>
+                        {brand}
+                      </option>
+                    ))}
                   </select>
                 )}
               </td>
