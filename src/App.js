@@ -46,18 +46,24 @@ export default function BakeryPlanner() {
       const brand = ingredientBrands[i.name];
       if (brand) {
         cost = getCostPerKg(i.name, brand) * grams / 1000;
+      } else {
+        cost = getCostPerKg(i.name, "") * grams / 1000; // Calculate without brand if no brand selected
       }
     } else if (i.fixedGrams) {
       grams = i.fixedGrams;
       const brand = ingredientBrands[i.name];
       if (brand) {
         cost = getCostPerKg(i.name, brand) * grams / 1000;
+      } else {
+        cost = getCostPerKg(i.name, "") * grams / 1000; // Calculate without brand if no brand selected
       }
     } else if (i.percent) {
       grams = (i.percent / 100) * doughBaseGrams;
       const brand = ingredientBrands[i.name];
       if (brand) {
         cost = getCostPerKg(i.name, brand) * grams / 1000;
+      } else {
+        cost = getCostPerKg(i.name, "") * grams / 1000; // Calculate without brand if no brand selected
       }
     }
 
