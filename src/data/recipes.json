@@ -38,8 +38,8 @@
         "note": "Unsalted, dough only"
       },
       {
-        "name": "Salted butter (filling)",
-        "fixedGrams": 670
+        "name": "Salted butter (filling)", 
+        "perUnitGrams": 10 
       },
       {
         "name": "Sea salt (topping)",
