@@ -18,10 +18,10 @@ export default function BakeryPlanner() {
     ? inputValue
     : inputValue / (totalBakersPercent / 100);
 
+  // Function to get ingredient cost from price db, using default first brand if no brand selected
   const getCostPerKg = (ingredientName, brand) => {
     const ingredient = prices[ingredientName];
     if (ingredient) {
-      // If no brand selected, use the first brand as default
       return brand ? ingredient[brand] : ingredient[Object.keys(ingredient)[0]];
     }
     return 0;
