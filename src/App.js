@@ -19,9 +19,9 @@ export default function BakeryPlanner() {
     : inputValue / (totalBakersPercent / 100);
 
   const getCostPerKg = (ingredientName, brand) => {
-    // Get price for the brand or default price for ingredients without a brand
     const ingredient = prices[ingredientName];
     if (ingredient) {
+      // If no brand, return the default price (if available)
       return brand ? ingredient[brand] : ingredient[""];
     }
     return 0;
