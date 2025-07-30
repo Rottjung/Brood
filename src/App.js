@@ -57,15 +57,15 @@ export default function BakeryPlanner() {
       <label>
         <input
           type="checkbox"
-          checked={useDoughInput}
+          checked={!useDoughInput}
           onChange={() => setUseDoughInput(!useDoughInput)}
         />
-        &nbsp; Use Total Dough Weight
+        &nbsp; Use Total flour Weight
       </label>
 
       <div style={{ marginTop: "0.5rem" }}>
         <label>
-          {useDoughInput ? "Total Dough Weight (g):" : "Flour Base (g):"}
+          {!useDoughInput ? "Total Dough Weight (g):" : "Flour Base (g):"}
         </label>
         <input
           type="number"
