@@ -1,17 +1,55 @@
 [
   {
     "name": "Shio Pan",
-    "itemWeightGrams": 60, 
+    "itemWeightGrams": 60,
     "ingredients": [
-      { "name": "Bread flour", "percent": 100 },
-      { "name": "Water", "percent": 50 },
-      { "name": "Milk", "percent": 20 },
-      { "name": "Pâte fermentée", "percent": 30, "note": "366g flour + 234g water + 12g salt" },
-      { "name": "White sugar", "percent": 6 },
-      { "name": "Salt", "percent": 1.8, "adjusted": 24 },
-      { "name": "Butter", "percent": 8, "note": "Unsalted, dough only" },
-      { "name": "Salted butter (filling)", "perUnitGrams": 10 },
-      { "name": "Sea salt (topping)", "asNeeded": true }
+      {
+        "name": "Bread flour",
+        "percent": 100,
+        "brand": ""
+      },
+      {
+        "name": "Water",
+        "percent": 50,
+        "brand": ""
+      },
+      {
+        "name": "Milk",
+        "percent": 20,
+        "brand": ""
+      },
+      {
+        "name": "P\u00e2te ferment\u00e9e",
+        "percent": 30,
+        "note": "366g flour + 234g water + 12g salt",
+        "brand": ""
+      },
+      {
+        "name": "Sugar",
+        "percent": 6,
+        "brand": ""
+      },
+      {
+        "name": "Salt",
+        "percent": 1.8,
+        "adjusted": 24,
+        "brand": ""
+      },
+      {
+        "name": "Butter",
+        "percent": 8,
+        "note": "Unsalted, dough only",
+        "brand": "Anchor"
+      },
+      {
+        "name": "Salted butter (filling)",
+        "perUnitGrams": 10,
+        "brand": "Anchor"
+      },
+      {
+        "name": "Sea salt (topping)",
+        "brand": ""
+      }
     ]
   }
 ]
