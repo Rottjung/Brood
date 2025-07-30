@@ -9,7 +9,7 @@ export default function BakeryPlanner() {
     .filter(i => i.percent)
     .reduce((sum, i) => sum + i.percent, 0);
 
-  const [useDoughInput, setUseDoughInput] = useState(true);  // Inverted default state
+  const [useDoughInput, setUseDoughInput] = useState(true);  // Corrected inverted boolean state
   const [inputValue, setInputValue] = useState(4000); // grams
   const [ingredientBrands, setIngredientBrands] = useState({}); // Store selected brands for ingredients
 
@@ -71,7 +71,7 @@ export default function BakeryPlanner() {
       <label>
         <input
           type="checkbox"
-          checked={useDoughInput}
+          checked={!useDoughInput}  // Inverted boolean as requested
           onChange={() => setUseDoughInput(!useDoughInput)}
         />
         &nbsp; Use Total Dough Weight
@@ -79,7 +79,7 @@ export default function BakeryPlanner() {
 
       <div style={{ marginTop: "0.5rem" }}>
         <label>
-          {useDoughInput ? "Total Dough Weight (g):" : "Flour Base (g):"}
+          {!useDoughInput ? "Total Dough Weight (g):" : "Flour Base (g):"}  {/* Corrected the logic for label */}
         </label>
         <input
           type="number"
@@ -108,7 +108,7 @@ export default function BakeryPlanner() {
               <td align="right">{i.grams.toFixed(1)}</td>
               <td align="right">{i.cost}</td>
               <td>
-                {i.name === "Butter" || i.name === "Salted butter (filling)" ? (
+                {(i.name === "Butter" || i.name === "Salted butter (filling)") && (
                   <select
                     value={ingredientBrands[i.name] || "Anchor"}
                     onChange={e => handleBrandChange(i.name, e.target.value)}
@@ -116,7 +116,7 @@ export default function BakeryPlanner() {
                     <option value="Anchor">Anchor</option>
                     <option value="Gold">Gold</option>
                   </select>
-                ) : null}
+                )}
               </td>
             </tr>
           ))}
