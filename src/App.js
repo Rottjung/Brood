@@ -12,6 +12,7 @@ export default function BakeryPlanner() {
   const [useDoughInput, setUseDoughInput] = useState(false);
   const [inputValue, setInputValue] = useState(4000); // grams
 
+  // Total dough weight vs flour weight
   const flourBaseGrams = useDoughInput
     ? inputValue / (totalBakersPercent / 100)
     : inputValue;
@@ -26,6 +27,7 @@ export default function BakeryPlanner() {
   const scaledIngredients = recipe.ingredients.map(i => {
     let grams = 0;
 
+    // Handle ingredients based on per unit weight (e.g., butter sticks)
     if (i.perUnitGrams) {
       grams = i.perUnitGrams * recipe.yieldUnits;
     } else if (i.fixedGrams) {
