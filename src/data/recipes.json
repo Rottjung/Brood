@@ -7,7 +7,7 @@
       { "name": "Water", "percent": 50 },
       { "name": "Milk", "percent": 20 },
       { "name": "Pâte fermentée", "percent": 30, "note": "366g flour + 234g water + 12g salt" },
-      { "name": "Sugar", "percent": 6 },
+      { "name": "White sugar", "percent": 6 },
       { "name": "Salt", "percent": 1.8, "adjusted": 24 },
       { "name": "Butter", "percent": 8, "note": "Unsalted, dough only" },
       { "name": "Salted butter (filling)", "perUnitGrams": 10 },
