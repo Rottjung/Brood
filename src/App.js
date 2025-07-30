@@ -12,7 +12,7 @@ export default function BakeryPlanner() {
   const [useDoughInput, setUseDoughInput] = useState(false);
   const [inputValue, setInputValue] = useState(4000); // grams
 
-  // Calculate based on dough weight
+  // Total dough weight vs flour weight
   const doughBaseGrams = useDoughInput
     ? inputValue
     : inputValue / (totalBakersPercent / 100);
@@ -24,12 +24,14 @@ export default function BakeryPlanner() {
     return match ? match.price : 0;
   };
 
+  // Scaling ingredients based on per unit weight or percentage
   const scaledIngredients = recipe.ingredients.map(i => {
     let grams = 0;
 
     // Handle ingredients based on per unit weight (e.g., butter sticks)
     if (i.perUnitGrams) {
-      grams = i.perUnitGrams * recipe.yieldUnits;
+      const units = doughBaseGrams / recipe.itemWeightGrams;
+      grams = i.perUnitGrams * units;
     } else if (i.fixedGrams) {
       grams = i.fixedGrams;
     } else if (i.percent) {
