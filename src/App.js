@@ -43,22 +43,28 @@ export default function BakeryPlanner() {
     if (i.perUnitGrams) {
       const units = doughBaseGrams / recipe.itemWeightGrams;
       grams = i.perUnitGrams * units;
-      const brand = ingredientBrands[i.name] || "Anchor"; // Default to Anchor if no brand is selected
-      cost = getCostPerKg(i.name, brand) * grams / 1000;
+      const brand = ingredientBrands[i.name];
+      if (brand) {
+        cost = getCostPerKg(i.name, brand) * grams / 1000;
+      }
     } else if (i.fixedGrams) {
       grams = i.fixedGrams;
-      const brand = ingredientBrands[i.name] || "Anchor"; // Default to Anchor if no brand is selected
-      cost = getCostPerKg(i.name, brand) * grams / 1000;
+      const brand = ingredientBrands[i.name];
+      if (brand) {
+        cost = getCostPerKg(i.name, brand) * grams / 1000;
+      }
     } else if (i.percent) {
       grams = (i.percent / 100) * doughBaseGrams;
-      const brand = ingredientBrands[i.name] || "Anchor"; // Default to Anchor if no brand is selected
-      cost = getCostPerKg(i.name, brand) * grams / 1000;
+      const brand = ingredientBrands[i.name];
+      if (brand) {
+        cost = getCostPerKg(i.name, brand) * grams / 1000;
+      }
     }
 
     return {
       ...i,
       grams,
-      cost: cost.toFixed(2)
+      cost: cost.toFixed(2) || "0.00"  // Ensuring no null cost
     };
   });
 
