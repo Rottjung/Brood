@@ -10,36 +10,50 @@ export default function BakeryPlanner() {
     .reduce((sum, i) => sum + i.percent, 0);
 
   const [useDoughInput, setUseDoughInput] = useState(false);
-  const [inputValue, setInputValue] = useState(1000); // grams
+  const [inputValue, setInputValue] = useState(4000); // grams
+  const [ingredientBrands, setIngredientBrands] = useState({}); // Store selected brands for ingredients
 
   // Total dough weight vs flour weight
   const doughBaseGrams = useDoughInput
     ? inputValue
     : inputValue / (totalBakersPercent / 100);
 
-  const getCostPerKg = (ingredientName) => {
+  const getCostPerKg = (ingredientName, brand) => {
     const match = prices.find(p =>
-      ingredientName.toLowerCase().includes(p.name.toLowerCase())
+      p.name.toLowerCase().includes(ingredientName.toLowerCase()) &&
+      p.name.toLowerCase().includes(brand.toLowerCase())
     );
     return match ? match.price : 0;
+  };
+
+  // Handle changing the brand selection
+  const handleBrandChange = (ingredientName, brand) => {
+    setIngredientBrands(prevState => ({
+      ...prevState,
+      [ingredientName]: brand
+    }));
   };
 
   // Scaling ingredients based on per unit weight or percentage
   const scaledIngredients = recipe.ingredients.map(i => {
     let grams = 0;
+    let cost = 0;
 
     // Handle ingredients based on per unit weight (e.g., butter sticks)
     if (i.perUnitGrams) {
       const units = doughBaseGrams / recipe.itemWeightGrams;
       grams = i.perUnitGrams * units;
+      const brand = ingredientBrands[i.name] || "Anchor"; // Default to Anchor if no brand is selected
+      cost = getCostPerKg(i.name, brand) * grams / 1000;
     } else if (i.fixedGrams) {
       grams = i.fixedGrams;
+      const brand = ingredientBrands[i.name] || "Anchor"; // Default to Anchor if no brand is selected
+      cost = getCostPerKg(i.name, brand) * grams / 1000;
     } else if (i.percent) {
       grams = (i.percent / 100) * doughBaseGrams;
+      const brand = ingredientBrands[i.name] || "Anchor"; // Default to Anchor if no brand is selected
+      cost = getCostPerKg(i.name, brand) * grams / 1000;
     }
-
-    const costPerKg = getCostPerKg(i.name);
-    const cost = (grams / 1000) * costPerKg;
 
     return {
       ...i,
@@ -57,7 +71,7 @@ export default function BakeryPlanner() {
       <label>
         <input
           type="checkbox"
-          checked={!useDoughInput}
+          checked={useDoughInput}
           onChange={() => setUseDoughInput(!useDoughInput)}
         />
         &nbsp; Use Total Dough Weight
@@ -65,7 +79,7 @@ export default function BakeryPlanner() {
 
       <div style={{ marginTop: "0.5rem" }}>
         <label>
-          {!useDoughInput ? "Total Dough Weight (g):" : "Flour Base (g):"}
+          {useDoughInput ? "Total Dough Weight (g):" : "Flour Base (g):"}
         </label>
         <input
           type="number"
@@ -83,6 +97,7 @@ export default function BakeryPlanner() {
             <th>%</th>
             <th>Grams</th>
             <th>Cost (฿)</th>
+            <th>Brand</th>
           </tr>
         </thead>
         <tbody>
@@ -92,11 +107,23 @@ export default function BakeryPlanner() {
               <td align="right">{i.percent || (i.perUnitGrams ? `~${i.perUnitGrams}g/unit` : "-")}</td>
               <td align="right">{i.grams.toFixed(1)}</td>
               <td align="right">{i.cost}</td>
+              <td>
+                {i.name === "Butter" || i.name === "Salted butter (filling)" ? (
+                  <select
+                    value={ingredientBrands[i.name] || "Anchor"}
+                    onChange={e => handleBrandChange(i.name, e.target.value)}
+                  >
+                    <option value="Anchor">Anchor</option>
+                    <option value="Gold">Gold</option>
+                  </select>
+                ) : null}
+              </td>
             </tr>
           ))}
           <tr style={{ fontWeight: "bold" }}>
             <td colSpan="3">Total Cost</td>
             <td align="right">{totalCost.toFixed(2)} ฿</td>
+            <td></td>
           </tr>
         </tbody>
       </table>
