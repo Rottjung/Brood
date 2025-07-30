@@ -12,10 +12,10 @@ export default function BakeryPlanner() {
   const [useDoughInput, setUseDoughInput] = useState(false);
   const [inputValue, setInputValue] = useState(4000); // grams
 
-  // Total dough weight vs flour weight
-  const flourBaseGrams = useDoughInput
-    ? inputValue / (totalBakersPercent / 100)
-    : inputValue;
+  // Calculate based on dough weight
+  const doughBaseGrams = useDoughInput
+    ? inputValue
+    : inputValue / (totalBakersPercent / 100);
 
   const getCostPerKg = (ingredientName) => {
     const match = prices.find(p =>
@@ -33,7 +33,7 @@ export default function BakeryPlanner() {
     } else if (i.fixedGrams) {
       grams = i.fixedGrams;
     } else if (i.percent) {
-      grams = (i.percent / 100) * flourBaseGrams;
+      grams = (i.percent / 100) * doughBaseGrams;
     }
 
     const costPerKg = getCostPerKg(i.name);
