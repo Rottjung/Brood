@@ -1,0 +1,72 @@
+[
+  {
+    "name": "Butter (Anchor)",
+    "unit": "kg",
+    "price": 456.5
+  },
+  {
+    "name": "Butter (Gold)",
+    "unit": "kg",
+    "price": 335
+  },
+  {
+    "name": "Flour",
+    "unit": "kg",
+    "price": 40.17
+  },
+  {
+    "name": "Water",
+    "unit": "liter",
+    "price": 3.6
+  },
+  {
+    "name": "Eggs",
+    "unit": "each",
+    "price": 4.166666666666667
+  },
+  {
+    "name": "Milk",
+    "unit": "liter",
+    "price": 45
+  },
+  {
+    "name": "Whipcream",
+    "unit": "liter",
+    "price": 250
+  },
+  {
+    "name": "White sugar",
+    "unit": "kg",
+    "price": 35
+  },
+  {
+    "name": "Brown sugar",
+    "unit": "kg",
+    "price": 40
+  },
+  {
+    "name": "Salt",
+    "unit": "kg",
+    "price": 20
+  },
+  {
+    "name": "Chocolate",
+    "unit": "kg",
+    "price": 250
+  },
+  {
+    "name": "Cheese",
+    "unit": "kg",
+    "price": 500
+  },
+  {
+    "name": "Olive oil",
+    "unit": "liter",
+    "price": 500
+  },
+  {
+    "name": "Vegetable oil",
+    "unit": "liter",
+    "price": 50
+  }
+]
