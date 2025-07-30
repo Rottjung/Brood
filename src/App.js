@@ -9,7 +9,7 @@ export default function BakeryPlanner() {
     .filter(i => i.percent)
     .reduce((sum, i) => sum + i.percent, 0);
 
-  const [useDoughInput, setUseDoughInput] = useState(false);
+  const [useDoughInput, setUseDoughInput] = useState(true);  // Inverted default state
   const [inputValue, setInputValue] = useState(4000); // grams
   const [ingredientBrands, setIngredientBrands] = useState({}); // Store selected brands for ingredients
 
@@ -71,7 +71,7 @@ export default function BakeryPlanner() {
       <label>
         <input
           type="checkbox"
-          checked={!useDoughInput}
+          checked={useDoughInput}
           onChange={() => setUseDoughInput(!useDoughInput)}
         />
         &nbsp; Use Total Dough Weight
@@ -79,7 +79,7 @@ export default function BakeryPlanner() {
 
       <div style={{ marginTop: "0.5rem" }}>
         <label>
-          {!useDoughInput ? "Total Dough Weight (g):" : "Flour Base (g):"}
+          {useDoughInput ? "Total Dough Weight (g):" : "Flour Base (g):"}
         </label>
         <input
           type="number"
