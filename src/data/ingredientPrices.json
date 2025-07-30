@@ -1,72 +1,42 @@
-[
-  {
-    "name": "Butter (Anchor)",
-    "unit": "kg",
-    "price": 456.5
+{
+  "Butter": {
+    "Anchor": 456.5,
+    "Gold": 335
   },
-  {
-    "name": "Butter (Gold)",
-    "unit": "kg",
-    "price": 335
+  "Flour": {
+    "": 40.17
   },
-  {
-    "name": "Flour",
-    "unit": "kg",
-    "price": 40.17
+  "Water": {
+    "": 3.6
   },
-  {
-    "name": "Water",
-    "unit": "liter",
-    "price": 3.6
+  "Eggs": {
+    "": 4.166666666666667
   },
-  {
-    "name": "Eggs",
-    "unit": "each",
-    "price": 4.166666666666667
+  "Milk": {
+    "": 45
   },
-  {
-    "name": "Milk",
-    "unit": "liter",
-    "price": 45
+  "Whipcream": {
+    "": 250
   },
-  {
-    "name": "Whipcream",
-    "unit": "liter",
-    "price": 250
+  "White sugar": {
+    "": 35
   },
-  {
-    "name": "White sugar",
-    "unit": "kg",
-    "price": 35
+  "Brown sugar": {
+    "": 40
   },
-  {
-    "name": "Brown sugar",
-    "unit": "kg",
-    "price": 40
+  "Salt": {
+    "": 20
   },
-  {
-    "name": "Salt",
-    "unit": "kg",
-    "price": 20
+  "Chocolate": {
+    "": 250
   },
-  {
-    "name": "Chocolate",
-    "unit": "kg",
-    "price": 250
+  "Cheese": {
+    "": 500
   },
-  {
-    "name": "Cheese",
-    "unit": "kg",
-    "price": 500
+  "Olive oil": {
+    "": 500
   },
-  {
-    "name": "Olive oil",
-    "unit": "liter",
-    "price": 500
-  },
-  {
-    "name": "Vegetable oil",
-    "unit": "liter",
-    "price": 50
+  "Vegetable oil": {
+    "": 50
   }
-]
+}
