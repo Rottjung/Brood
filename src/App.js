@@ -19,11 +19,12 @@ export default function BakeryPlanner() {
     : inputValue / (totalBakersPercent / 100);
 
   const getCostPerKg = (ingredientName, brand) => {
-    const match = prices.find(p =>
-      p.name.toLowerCase().includes(ingredientName.toLowerCase()) &&
-      p.name.toLowerCase().includes(brand.toLowerCase())
-    );
-    return match ? match.price : 0;
+    // Get price for the brand or default price for ingredients without a brand
+    const ingredient = prices[ingredientName];
+    if (ingredient) {
+      return brand ? ingredient[brand] : ingredient[""];
+    }
+    return 0;
   };
 
   // Handle changing the brand selection
@@ -44,27 +45,15 @@ export default function BakeryPlanner() {
       const units = doughBaseGrams / recipe.itemWeightGrams;
       grams = i.perUnitGrams * units;
       const brand = ingredientBrands[i.name];
-      if (brand) {
-        cost = getCostPerKg(i.name, brand) * grams / 1000;
-      } else {
-        cost = getCostPerKg(i.name, "") * grams / 1000; // Calculate without brand if no brand selected
-      }
+      cost = getCostPerKg(i.name, brand) * grams / 1000;
     } else if (i.fixedGrams) {
       grams = i.fixedGrams;
       const brand = ingredientBrands[i.name];
-      if (brand) {
-        cost = getCostPerKg(i.name, brand) * grams / 1000;
-      } else {
-        cost = getCostPerKg(i.name, "") * grams / 1000; // Calculate without brand if no brand selected
-      }
+      cost = getCostPerKg(i.name, brand) * grams / 1000;
     } else if (i.percent) {
       grams = (i.percent / 100) * doughBaseGrams;
       const brand = ingredientBrands[i.name];
-      if (brand) {
-        cost = getCostPerKg(i.name, brand) * grams / 1000;
-      } else {
-        cost = getCostPerKg(i.name, "") * grams / 1000; // Calculate without brand if no brand selected
-      }
+      cost = getCostPerKg(i.name, brand) * grams / 1000;
     }
 
     return {
