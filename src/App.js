@@ -60,7 +60,7 @@ export default function BakeryPlanner() {
           checked={!useDoughInput}
           onChange={() => setUseDoughInput(!useDoughInput)}
         />
-        &nbsp; Use Total flour Weight
+        &nbsp; Use Total Dough Weight
       </label>
 
       <div style={{ marginTop: "0.5rem" }}>
