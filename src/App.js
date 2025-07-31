@@ -44,7 +44,7 @@ export default function BakeryPlanner() {
   };
 
   // Scaling ingredients based on per unit weight or percentage
-  const scaledIngredients = recipe.ingredients.map(i => {
+  const scaledIngredients = recipe.ingredients.concat(recipe.extras).map(i => {
     let grams = 0;
     let cost = 0;
 
