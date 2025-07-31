@@ -139,13 +139,6 @@ export default function BakeryPlanner() {
           </tr>
         </tbody>
       </table>
-
-      <h3 style={{ marginTop: "1.5rem" }}>Ingredient Notes:</h3>
-      <ul>
-        {recipe.ingredients.filter(i => i.note).map((i, idx) => (
-          <li key={idx}>• {i.name}: {i.note}</li>
-        ))}
-      </ul>
     </div>
   );
 }
