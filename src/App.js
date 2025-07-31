@@ -40,7 +40,6 @@ export default function BakeryPlanner() {
     let grams = 0;
     let cost = 0;
 
-    // Handle ingredients based on per unit weight (e.g., butter sticks)
     if (i.perUnitGrams) {
       const units = doughBaseGrams / recipe.itemWeightGrams;
       grams = i.perUnitGrams * units;
