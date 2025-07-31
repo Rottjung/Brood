@@ -1,7 +1,10 @@
 {
-  "Butter": {
+  "Unsalted butter": {
     "Anchor": 456.5,
     "Gold": 335
+  },
+  "Salted butter": {
+    "Kirkland": 340
   },
   "Bread flour": {
     "": 40.17
