@@ -9,20 +9,30 @@ export default function BakeryPlanner() {
     .filter(i => i.percent)
     .reduce((sum, i) => sum + i.percent, 0);
 
-  const [useDoughInput, setUseDoughInput] = useState(false);
-  const [inputValue, setInputValue] = useState(4000); // grams
+  const [useDoughInput, setUseDoughInput] = useState(true);
+  const [inputValue, setInputValue] = useState(4000);
+  const [ingredientBrands, setIngredientBrands] = useState({});
 
   // Total dough weight vs flour weight
   const doughBaseGrams = useDoughInput
     ? inputValue
     : inputValue / (totalBakersPercent / 100);
 
+  // Function to get ingredient cost from price db, using default first brand if no brand selected
   const getCostPerKg = (ingredientName, brand) => {
-    const match = prices.find(p =>
-      p.name.toLowerCase().includes(ingredientName.toLowerCase()) && 
-      p.name.toLowerCase().includes(brand.toLowerCase())
-    );
-    return match ? match.price : 0;
+    const ingredient = prices[ingredientName];
+    if (ingredient) {
+      return brand ? ingredient[brand] : ingredient[Object.keys(ingredient)[0]];
+    }
+    return 0;
+  };
+
+  // Handle changing the brand selection
+  const handleBrandChange = (ingredientName, brand) => {
+    setIngredientBrands(prevState => ({
+      ...prevState,
+      [ingredientName]: brand
+    }));
   };
 
   // Scaling ingredients based on per unit weight or percentage
@@ -34,19 +44,22 @@ export default function BakeryPlanner() {
     if (i.perUnitGrams) {
       const units = doughBaseGrams / recipe.itemWeightGrams;
       grams = i.perUnitGrams * units;
-      cost = getCostPerKg(i.name, i.brand) * grams / 1000;
+      const brand = ingredientBrands[i.name] || Object.keys(prices[i.name])[0]; // Default to the first brand
+      cost = getCostPerKg(i.name, brand) * grams / 1000;
     } else if (i.fixedGrams) {
       grams = i.fixedGrams;
-      cost = getCostPerKg(i.name, i.brand) * grams / 1000;
+      const brand = ingredientBrands[i.name] || Object.keys(prices[i.name])[0]; // Default to the first brand
+      cost = getCostPerKg(i.name, brand) * grams / 1000;
     } else if (i.percent) {
       grams = (i.percent / 100) * doughBaseGrams;
-      cost = getCostPerKg(i.name, i.brand) * grams / 1000;
+      const brand = ingredientBrands[i.name] || Object.keys(prices[i.name])[0]; // Default to the first brand
+      cost = getCostPerKg(i.name, brand) * grams / 1000;
     }
 
     return {
       ...i,
       grams,
-      cost: cost.toFixed(2)
+      cost: cost.toFixed(2) || "0.00"
     };
   });
 
@@ -59,7 +72,7 @@ export default function BakeryPlanner() {
       <label>
         <input
           type="checkbox"
-          checked={useDoughInput}
+          checked={!useDoughInput}
           onChange={() => setUseDoughInput(!useDoughInput)}
         />
         &nbsp; Use Total Dough Weight
@@ -67,7 +80,7 @@ export default function BakeryPlanner() {
 
       <div style={{ marginTop: "0.5rem" }}>
         <label>
-          {useDoughInput ? "Total Dough Weight (g):" : "Flour Base (g):"}
+          {!useDoughInput ? "Total Dough Weight (g):" : "Flour Base (g):"}
         </label>
         <input
           type="number"
@@ -85,6 +98,7 @@ export default function BakeryPlanner() {
             <th>%</th>
             <th>Grams</th>
             <th>Cost (฿)</th>
+            <th>Brand</th>
           </tr>
         </thead>
         <tbody>
@@ -94,11 +108,26 @@ export default function BakeryPlanner() {
               <td align="right">{i.percent || (i.perUnitGrams ? `~${i.perUnitGrams}g/unit` : "-")}</td>
               <td align="right">{i.grams.toFixed(1)}</td>
               <td align="right">{i.cost}</td>
+              <td>
+                {(i.name === "Butter" || i.name === "Salted butter (filling)") && (
+                  <select
+                    value={ingredientBrands[i.name] || Object.keys(prices[i.name])[0]} // Default to first brand
+                    onChange={e => handleBrandChange(i.name, e.target.value)}
+                  >
+                    {Object.keys(prices[i.name]).map(brand => (
+                      <option key={brand} value={brand}>
+                        {brand}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </td>
             </tr>
           ))}
           <tr style={{ fontWeight: "bold" }}>
             <td colSpan="3">Total Cost</td>
             <td align="right">{totalCost.toFixed(2)} ฿</td>
+            <td></td>
           </tr>
         </tbody>
       </table>
