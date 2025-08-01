@@ -4,25 +4,6 @@ import recipes from "./data/recipes.json";
 import prices from "./data/ingredientPrices.json";
 
 export default function BakeryPlanner() {
-  const recipe = recipes[0];
-
-  if (!recipe || !Array.isArray(recipe.ingredients)) {
-    return (
-      <div style={{ color: 'red', fontWeight: 'bold', padding: '1rem' }}>
-        ⚠️ Error: Recipe data is missing or malformed.<br />
-        Check that recipes.json is correctly structured.
-      </div>
-    );
-  }
-
-  const brandOptions = {};
-  recipe.ingredients.concat(recipe.extras).forEach(i => {
-    const options = prices[i.name];
-    if (options && Object.keys(options).some(k => k !== "")) {
-      brandOptions[i.name] = Object.keys(options).filter(k => k !== "");
-    }
-  });
-
   const brandOptions = {};
   recipe.ingredients.concat(recipe.extras).forEach(i => {
     const options = prices[i.name];
@@ -62,7 +43,11 @@ export default function BakeryPlanner() {
   };
 
   // Scaling ingredients based on per unit weight or percentage
-  const scaledIngredients = recipe.ingredients.concat(recipe.extras).map(i => {
+  
+let scaledIngredients = [];
+try {
+  scaledIngredients = recipe.ingredients.concat(recipe.extras).map(i => {
+
     let grams = 0;
     let cost = 0;
 
