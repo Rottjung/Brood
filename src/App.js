@@ -4,14 +4,7 @@ import recipes from "./data/recipes.json";
 import prices from "./data/ingredientPrices.json";
 
 export default function BakeryPlanner() {
-  const brandOptions = {};
-  recipe.ingredients.concat(recipe.extras).forEach(i => {
-    const options = prices[i.name];
-    if (options && Object.keys(options).some(k => k !== "")) {
-      brandOptions[i.name] = Object.keys(options).filter(k => k !== "");
-    }
-  });
-
+  const recipe = recipes[0];
   const totalBakersPercent = recipe.ingredients
     .filter(i => i.percent)
     .reduce((sum, i) => sum + i.percent, 0);
@@ -43,11 +36,7 @@ export default function BakeryPlanner() {
   };
 
   // Scaling ingredients based on per unit weight or percentage
-  
-let scaledIngredients = [];
-try {
-  scaledIngredients = recipe.ingredients.concat(recipe.extras).map(i => {
-
+  const scaledIngredients = recipe.ingredients.map(i => {
     let grams = 0;
     let cost = 0;
 
@@ -113,28 +102,25 @@ try {
           </tr>
         </thead>
         <tbody>
-          
-{scaledIngredients.map((i, idx) => (
-  <tr key={idx}>
-    <td>{i.name}</td>
-    <td align="right">{i.percent || (i.perUnitGrams ? `~${i.perUnitGrams}g/unit` : "-")}</td>
-    <td align="right">{i.grams.toFixed(1)}</td>
-    <td align="right">{i.cost}</td>
-    <td>
-      {brandOptions[i.name] && (
-        <select
-          value={ingredientBrands[i.name] || brandOptions[i.name][0]}
-          onChange={e => handleBrandChange(i.name, e.target.value)}
-        >
-          {brandOptions[i.name].map(brand => (
-            <option key={brand} value={brand}>{brand}</option>
+          {scaledIngredients.map((i, idx) => (
+            <tr key={idx}>
+              <td>{i.name}</td>
+              <td align="right">{i.percent || (i.perUnitGrams ? `~${i.perUnitGrams}g/unit` : "-")}</td>
+              <td align="right">{i.grams.toFixed(1)}</td>
+              <td align="right">{i.cost}</td>
+              <td>
+                {(i.name === "Butter" || i.name === "Salted butter (filling)") && (
+                  <select
+                    value={ingredientBrands[i.name] || "Anchor"}
+                    onChange={e => handleBrandChange(i.name, e.target.value)}
+                  >
+                    <option value="Anchor">Anchor</option>
+                    <option value="Gold">Gold</option>
+                  </select>
+                )}
+              </td>
+            </tr>
           ))}
-        </select>
-      )}
-    </td>
-  </tr>
-))}
-
           <tr style={{ fontWeight: "bold" }}>
             <td colSpan="3">Total Cost</td>
             <td align="right">{totalCost.toFixed(2)} ฿</td>
@@ -142,6 +128,13 @@ try {
           </tr>
         </tbody>
       </table>
+
+      <h3 style={{ marginTop: "1.5rem" }}>Ingredient Notes:</h3>
+      <ul>
+        {recipe.ingredients.filter(i => i.note).map((i, idx) => (
+          <li key={idx}>• {i.name}: {i.note}</li>
+        ))}
+      </ul>
     </div>
   );
 }
