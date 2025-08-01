@@ -12,7 +12,6 @@ export default function BakeryPlanner() {
     }
   });
 
-  const recipe = recipes[0];
   const totalBakersPercent = recipe.ingredients
     .filter(i => i.percent)
     .reduce((sum, i) => sum + i.percent, 0);
