@@ -17,7 +17,8 @@
       },
       {
         "name": "P\u00e2te ferment\u00e9e",
-        "percent": 30
+        "percent": 30,
+        "note": "366g flour + 234g water + 12g salt"
       },
       {
         "name": "White sugar",
@@ -25,21 +26,20 @@
       },
       {
         "name": "Salt",
-        "percent": 2
+        "percent": 1.8,
+        "adjusted": 24
       },
       {
-        "name": "Unsalted butter",
-        "percent": 8
-      }
-    ],
-    "extras": [
+        "name": "Butter",
+        "percent": 8,
+        "note": "Unsalted, dough only"
+      },
       {
-        "name": "Salted butter",
+        "name": "Salted butter (filling)",
         "perUnitGrams": 10
       },
       {
-        "name": "Salt",
-        "perUnitGrams": 1
+        "name": "Sea salt (topping)"
       }
     ]
   }

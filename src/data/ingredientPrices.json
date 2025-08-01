@@ -1,11 +1,7 @@
 {
-  "Unsalted butter": {
+  "Butter": {
     "Anchor": 456.5,
     "Gold": 335
-  },
-  "Salted butter": {
-    "Anchor": 458,
-    "Gold": 340
   },
   "Bread flour": {
     "": 40.17
@@ -14,7 +10,7 @@
     "": 3.6
   },
   "Eggs": {
-    "": 5
+    "": 4.166666666666667
   },
   "Milk": {
     "": 45
