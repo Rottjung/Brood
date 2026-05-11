@@ -67,7 +67,8 @@
         <input type="number" id="number-of-items" class="input-short" oninput="handleItemsChange()">
       </p>
 
-      <h2>Cost per Item: <span id="cost-per-item">0</span> THB</h2>
+      <h2>Sellable Items: <span id="sellable-items">0</span></h2>
+      <h2>Ingredient Cost per Sellable Item: <span id="cost-per-item">0</span> THB</h2>
 
       <div class="suggested-column">
         <label>Electricity/month:
@@ -84,19 +85,36 @@
           <input type="number" id="hour-wage" value="50" class="input-short" oninput="handleRecipeChange()"> THB</label>
         <label>Employees:
           <input type="number" id="employees" value="1" class="input-short" oninput="handleRecipeChange()"></label>
-        <label>Average items/day:
+        <label>Average sold items/day:
           <input type="number" id="items-day" value="175" class="input-short" oninput="handleRecipeChange()"></label>
         <label>Misc/month:
           <input type="number" id="misc" value="0" class="input-short" oninput="handleRecipeChange()"> THB</label>
+        <label>Waste / yield loss:
+          <input type="number" step="0.1" id="waste-percent" value="5" class="input-short" oninput="handleRecipeChange()"> %</label>
+        <label>Packaging per item:
+          <input type="number" step="0.1" id="packaging-cost" value="0" class="input-short" oninput="handleRecipeChange()"> THB</label>
+        <label>Active labor person-minutes/batch:
+          <input type="number" step="1" id="batch-labor-minutes" value="0" class="input-short" oninput="handleRecipeChange()"></label>
         <label>Markup multiplier:
           <input type="number" step="0.1" id="markup" value="2.5" class="input-short" oninput="handleRecipeChange()"></label>
+        <label>Round price up to:
+          <input type="number" step="1" id="rounding-increment" value="5" class="input-short" oninput="handleRecipeChange()"> THB</label>
+        <label>Actual selling price:
+          <input type="number" step="0.1" id="manual-price" class="input-short" oninput="handleRecipeChange()"> THB</label>
 
         <h2>Overhead per Item: <span id="overhead-per-item">0</span> THB</h2>
-        <h2>Total Item Cost (Ingredients + Overhead): <span id="total-item-cost">0</span> THB</h2>
+        <h2>Packaging per Item: <span id="packaging-per-item">0</span> THB</h2>
+        <h2>Direct Labor per Item: <span id="direct-labor-per-item">0</span> THB</h2>
+        <h2>Total Item Cost: <span id="total-item-cost">0</span> THB</h2>
         <h2>Suggested Price per Item: <span id="suggested-price">0</span> THB</h2>
+        <h2>Rounded Suggested Price: <span id="rounded-suggested-price">0</span> THB</h2>
+        <h2>Selling Price Used: <span id="selling-price-used">0</span> THB</h2>
+        <h2>Food Cost: <span id="food-cost-percent">0</span>%</h2>
+        <h2>Profit Margin: <span id="profit-margin-percent">0</span>%</h2>
+        <h2>Estimated Profit per Item: <span id="estimated-profit-per-item">0</span> THB</h2>
         <h2>Total Overhead (Batch): <span id="overhead-batch">0</span> THB</h2>
-        <h2>Total Batch Cost (Ingredients + Overhead): <span id="total-batch-cost">0</span> THB</h2>
-        <h2>Suggested Total (Batch): <span id="suggested-total-batch">0</span> THB</h2>
+        <h2>Total Batch Cost: <span id="total-batch-cost">0</span> THB</h2>
+        <h2>Estimated Revenue (Batch): <span id="suggested-total-batch">0</span> THB</h2>
         <h2>Estimated Profit: <span id="estimated-profit">0</span> THB</h2>
       </div>
     </div>

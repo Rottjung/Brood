@@ -178,6 +178,31 @@ function formatItemCount(items) {
   return Math.abs(items - Math.round(items)) < 0.01 ? String(Math.round(items)) : items.toFixed(2);
 }
 
+function setText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
+}
+
+function wasteRate() {
+  const value = inputNumber('waste-percent');
+  return Math.min(Math.max(value, 0), 95) / 100;
+}
+
+function sellableItemsFor(items) {
+  const sellable = items * (1 - wasteRate());
+  return Math.max(sellable, 0.0001);
+}
+
+function roundUpToIncrement(value, increment) {
+  if (!Number.isFinite(value) || value <= 0) return 0;
+  if (!Number.isFinite(increment) || increment <= 0) return value;
+  return Math.ceil(value / increment) * increment;
+}
+
+function percentOf(part, whole) {
+  return whole > 0 ? (part / whole) * 100 : 0;
+}
+
 function populateRecipeSelect() {
   const select = document.getElementById('recipe-select');
   if (!select) return;
@@ -210,7 +235,9 @@ function handleRecipeChange() {
   const doughWeight = flourWeight * (doughPercent / 100);
 
   const itemsPerBatch = itemsForDoughWeight(doughWeight, itemWeight);
+  const sellableItemsPerBatch = sellableItemsFor(itemsPerBatch);
   document.getElementById('number-of-items').value = formatItemCount(itemsPerBatch);
+  setText('sellable-items', formatItemCount(sellableItemsPerBatch));
 
   const ingTbody = document.querySelector('#ingredients-table tbody');
   ingTbody.innerHTML = '';
@@ -408,7 +435,7 @@ function handleRecipeChange() {
   });
 
   document.getElementById('total-cost').textContent = totalCost.toFixed(2);
-  document.getElementById('cost-per-item').textContent = (totalCost / itemsPerBatch).toFixed(2);
+  document.getElementById('cost-per-item').textContent = (totalCost / sellableItemsPerBatch).toFixed(2);
   updateSuggestedPrice(totalCost, recipe);
 }
 
@@ -486,6 +513,7 @@ function updateTotalCost() {
   if (doughPercent <= 0) return;
   const doughWeight = inputType === 'flour' ? grams * (doughPercent / 100) : grams;
   const itemsPerBatch = itemsForDoughWeight(doughWeight, itemWeight);
+  const sellableItemsPerBatch = sellableItemsFor(itemsPerBatch);
 
   document.querySelectorAll('#fillings-table tbody tr').forEach(row => {
     const costPerItem = parseFloat(row.cells[3].textContent) || 0;
@@ -499,7 +527,8 @@ function updateTotalCost() {
 
   document.getElementById('total-cost').textContent = total.toFixed(2);
   document.getElementById('number-of-items').value = formatItemCount(itemsPerBatch);
-  document.getElementById('cost-per-item').textContent = (total / itemsPerBatch).toFixed(2);
+  setText('sellable-items', formatItemCount(sellableItemsPerBatch));
+  document.getElementById('cost-per-item').textContent = (total / sellableItemsPerBatch).toFixed(2);
   updateSuggestedPrice(total, recipe);
 }
 
@@ -517,6 +546,7 @@ function updateSuggestedPrice(totalCost, recipe) {
   if (doughPercent <= 0) return;
   const doughWeight = inputType === 'flour' ? grams * (doughPercent / 100) : grams;
   const itemsPerBatch = itemsForDoughWeight(doughWeight, itemWeight);
+  const sellableItemsPerBatch = sellableItemsFor(itemsPerBatch);
   const elec = inputNumber('electricity');
   const water = inputNumber('water');
   const gas = inputNumber('gas');
@@ -526,28 +556,47 @@ function updateSuggestedPrice(totalCost, recipe) {
   const employees = inputNumber('employees', 1) || 1;
   const dailyItems = inputNumber('items-day');
   const misc = inputNumber('misc');
+  const packagingPerItem = Math.max(inputNumber('packaging-cost'), 0);
+  const batchLaborMinutes = Math.max(inputNumber('batch-labor-minutes'), 0);
   const markup = inputNumber('markup', 1) || 1;
+  const roundingIncrement = inputNumber('rounding-increment');
+  const manualPrice = inputNumber('manual-price');
 
   const monthlyCost = elec + water + gas + (days * hours * wage * employees) + misc;
   const monthlyItems = days * dailyItems;
   const overheadPerItem = monthlyItems > 0 ? monthlyCost / monthlyItems : 0;
-
-  document.getElementById('overhead-per-item').textContent = overheadPerItem.toFixed(2);
-  const totalPerItem = (totalCost / itemsPerBatch) + overheadPerItem;
-  document.getElementById('total-item-cost').textContent = totalPerItem.toFixed(2);
+  const ingredientCostPerItem = totalCost / sellableItemsPerBatch;
+  const directLaborBatch = (batchLaborMinutes / 60) * wage;
+  const directLaborPerItem = directLaborBatch / sellableItemsPerBatch;
+  const totalPerItem = ingredientCostPerItem + overheadPerItem + packagingPerItem + directLaborPerItem;
   const suggestedPerItem = totalPerItem * markup;
-  document.getElementById('suggested-price').textContent = suggestedPerItem.toFixed(2);
+  const roundedSuggestedPerItem = roundUpToIncrement(suggestedPerItem, roundingIncrement);
+  const sellingPrice = manualPrice > 0 ? manualPrice : roundedSuggestedPerItem;
+  const profitPerItem = sellingPrice - totalPerItem;
+  const foodCostPercent = percentOf(ingredientCostPerItem, sellingPrice);
+  const profitMarginPercent = percentOf(profitPerItem, sellingPrice);
 
-  const batchOverhead = overheadPerItem * itemsPerBatch;
-  const totalBatchCost = totalCost + batchOverhead;
-  const suggestedTotalBatch = suggestedPerItem * itemsPerBatch;
+  const batchOverhead = overheadPerItem * sellableItemsPerBatch;
+  const batchPackaging = packagingPerItem * sellableItemsPerBatch;
+  const totalBatchCost = totalCost + batchOverhead + batchPackaging + directLaborBatch;
+  const estimatedRevenue = sellingPrice * sellableItemsPerBatch;
+  const profit = estimatedRevenue - totalBatchCost;
 
-  const ob = document.getElementById('overhead-batch'); if (ob) ob.textContent = batchOverhead.toFixed(2);
-  const tbc = document.getElementById('total-batch-cost'); if (tbc) tbc.textContent = totalBatchCost.toFixed(2);
-  const stb = document.getElementById('suggested-total-batch'); if (stb) stb.textContent = suggestedTotalBatch.toFixed(2);
-
-  const profit = suggestedTotalBatch - totalBatchCost;
-  const ep = document.getElementById('estimated-profit'); if (ep) ep.textContent = profit.toFixed(2);
+  setText('sellable-items', formatItemCount(sellableItemsPerBatch));
+  setText('overhead-per-item', overheadPerItem.toFixed(2));
+  setText('packaging-per-item', packagingPerItem.toFixed(2));
+  setText('direct-labor-per-item', directLaborPerItem.toFixed(2));
+  setText('total-item-cost', totalPerItem.toFixed(2));
+  setText('suggested-price', suggestedPerItem.toFixed(2));
+  setText('rounded-suggested-price', roundedSuggestedPerItem.toFixed(2));
+  setText('selling-price-used', sellingPrice.toFixed(2));
+  setText('food-cost-percent', foodCostPercent.toFixed(1));
+  setText('profit-margin-percent', profitMarginPercent.toFixed(1));
+  setText('estimated-profit-per-item', profitPerItem.toFixed(2));
+  setText('overhead-batch', batchOverhead.toFixed(2));
+  setText('total-batch-cost', totalBatchCost.toFixed(2));
+  setText('suggested-total-batch', estimatedRevenue.toFixed(2));
+  setText('estimated-profit', profit.toFixed(2));
 }
 
 // ===== Startup: load BOTH DBs, merge prices with user overrides =====
