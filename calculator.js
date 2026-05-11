@@ -295,6 +295,39 @@ function handleRecipeChange() {
     });
   });
 
+  const laminationTbody = document.querySelector('#lamination-table tbody');
+  laminationTbody.innerHTML = '';
+  (recipe.lamination || []).forEach(lam => {
+    const row = document.createElement('tr');
+    const percent = parseFloat(lam.percent) || 0;
+    const amount = flourWeight * (percent / 100);
+    const brands = brandNames(lam.name);
+    let chosenBrand = chooseBrand('ingredient', lam.name, brands);
+    if (chosenBrand) { brandCache.ingredient[lam.name] = chosenBrand; saveBrandCache(); }
+
+    const pricePerKg = priceFor(lam.name, chosenBrand);
+    const cost = pricePerKg * (amount / 1000);
+    totalCost += cost;
+
+    const rowSelect = `<select data-type="lamination" data-name="${escapeHtml(lam.name)}" data-amount="${amount}">
+        ${optionsHtml(brands, brandLabel)}
+      </select>`;
+
+    row.innerHTML = `
+      <td>${escapeHtml(lam.name)}</td>
+      <td>${amount.toFixed(1)}</td>
+      <td>${percent}%</td>
+      <td>${rowSelect}</td>
+      <td>${cost.toFixed(2)}</td>`;
+    laminationTbody.appendChild(row);
+
+    const sel = row.querySelector('select');
+    sel.value = chosenBrand;
+    sel.addEventListener('change', () => {
+      updateBrand(sel, 'ingredient', lam.name, amount, sel.parentElement.nextElementSibling);
+    });
+  });
+
   const fillingTbody = document.querySelector('#fillings-table tbody');
   fillingTbody.innerHTML = '';
   (recipe.fillings || []).forEach((filling, idx) => {
@@ -438,6 +471,10 @@ function updateFillingGrams(index, newGrams) {
 function updateTotalCost() {
   let total = 0;
   document.querySelectorAll('#ingredients-table tbody tr').forEach(row => {
+    total += parseFloat(row.cells[4].textContent) || 0;
+  });
+
+  document.querySelectorAll('#lamination-table tbody tr').forEach(row => {
     total += parseFloat(row.cells[4].textContent) || 0;
   });
 

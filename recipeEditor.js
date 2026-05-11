@@ -54,7 +54,7 @@ function rbCollectRecipe() {
     const pct = tr.querySelector('td:nth-child(2) input');
     return { name: (sel && sel.value) || '', percent: parseFloat(pct.value) || 0 };
   }).filter(i => i.name.length > 0);
-  return { name, itemWeightGrams: itemWeight, ingredients, fillings: [], extras: [] };
+  return { name, itemWeightGrams: itemWeight, ingredients, lamination: [], fillings: [], extras: [] };
 }
 
 function rbUpdateSummary() {
