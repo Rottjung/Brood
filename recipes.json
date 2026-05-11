@@ -479,14 +479,15 @@
         "percent": 2
       },
       {
-        "name": "Filling",
-        "percent": 50,
-        "excludeFromDoughWeight": true,
-        "defaultIngredient": "Unsalted butter"
-      },
-      {
         "name": "Starter",
         "percent": 20
+      }
+    ],
+    "fillings": [
+      {
+        "name": "Filling",
+        "perUnitGrams": 25.25,
+        "defaultIngredient": "Unsalted butter"
       }
     ],
     "extras": []
