@@ -3,10 +3,20 @@
     "": 0
   },
   "Unsalted butter": {
+    "_meta": {
+      "canBe": [
+        "Filling"
+      ]
+    }
     "Anchor": 456.5,
     "Gold": 285
   },
   "Salted butter": {
+    "_meta": {
+      "canBe": [
+        "Filling"
+      ]
+    }
     "Anchor": 458,
     "Gold": 284
   },
