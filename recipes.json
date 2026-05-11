@@ -347,7 +347,7 @@
   },
   {
     "name": "Croissant",
-    "itemWeightGrams": 500,
+    "itemWeightGrams": 100,
     "ingredients": [
       {
         "name": "All purpose flour",
