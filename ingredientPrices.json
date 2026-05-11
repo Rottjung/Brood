@@ -1,0 +1,83 @@
+{
+  "None": {
+    "": 0
+  },
+  "Unsalted butter": {
+    "Anchor": 456.5,
+    "Gold": 285
+  },
+  "Salted butter": {
+    "Anchor": 458,
+    "Gold": 284
+  },
+  "Seeds": {
+    "None": 0,
+    "Sesame": 300,
+    "Pumpkin": 220,
+    "Sunflower": 250
+  },
+  "Berries": {
+    "None": 0,
+    "Blueberry": 1000,
+    "Cranberry": 300,
+    "Raisin": 150,
+    "Strawberry": 200
+  },
+  "Nuts": {
+    "None": 0,
+    "Mixed": 1000,
+    "Peanuts": 400
+  },
+  "Almond Flour": {
+    "Cottage Farm": 337
+  },
+  "Filling": {
+    "None": 0,
+    "Chocolate": 250,
+    "Cheese": 500,
+    "Cream": 250
+  },
+  "Bread flour": {
+    "": 40.17
+  },
+  "All purpose flour": {
+    "": 40.17
+  },
+  "Self-raising flour": {
+    "": 40.17
+  },
+  "Water": {
+    "": 3.6
+  },
+  "Eggs": {
+    "": 5
+  },
+  "Milk": {
+    "": 45
+  },
+  "Whipcream": {
+    "": 250
+  },
+  "White sugar": {
+    "": 35
+  },
+  "Brown sugar": {
+    "": 40
+  },
+  "Salt": {
+    "": 20
+  },
+  "Chocolate": {
+    "": 250
+  },
+  "Cheese": {
+    "": 500
+  },
+  "Olive oil": {
+    "Estimate": 750,
+    "La Masia": 414
+  },
+  "Vegetable oil": {
+    "": 50
+  }
+}

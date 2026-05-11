@@ -1,0 +1,348 @@
+[
+  {
+    "name": "Shio Pan",
+    "itemWeightGrams": 50,
+    "ingredients": [
+      {
+        "name": "Bread flour",
+        "percent": 100
+      },
+      {
+        "name": "Water",
+        "percent": 50
+      },
+      {
+        "name": "Milk",
+        "percent": 20
+      },
+      {
+        "name": "Starter",
+        "percent": 20
+      },
+      {
+        "name": "White sugar",
+        "percent": 6
+      },
+      {
+        "name": "Salt",
+        "percent": 2
+      },
+      {
+        "name": "Unsalted butter",
+        "percent": 8
+      }
+    ],
+    "extras": [
+      {
+        "name": "Salted butter",
+        "perUnitGrams": 10
+      },
+      {
+        "name": "Salt",
+        "perUnitGrams": 1
+      }
+    ]
+  },
+  {
+    "name": "White Sourdough",
+    "itemWeightGrams": 650,
+    "ingredients": [
+      {
+        "name": "Bread flour",
+        "percent": 100
+      },
+      {
+        "name": "Starter",
+        "percent": 20
+      },
+      {
+        "name": "Water",
+        "percent": 75
+      },
+      {
+        "name": "Salt",
+        "percent": 2
+      }
+    ],
+    "extras": [
+      {
+        "name": "Seeds",
+        "perUnitGrams": 150
+      },
+      {
+        "name": "Berries",
+        "perUnitGrams": 150
+      },
+      {
+        "name": "Nuts",
+        "perUnitGrams": 150
+      }
+    ]
+  },
+  {
+      "name": "Sourdough FOCACCIA",
+      "itemWeightGrams": 500,
+      "ingredients":[
+          {
+            "name": "Bread flour",
+            "percent": 100
+          },
+          {
+              "name": "Water",
+              "percent": 60
+          },
+          {
+              "name": "Starter",
+              "percent": 20
+          },
+          {
+              "name": "Olive oil",
+              "percent": 10
+          },
+          {
+              "name": "Salt",
+              "percent": 2
+          }
+      ],
+      "extras": []
+  },
+  {
+    "name": "Brussels Waffles",
+    "itemWeightGrams": "20",
+    "ingredients": [
+      {
+        "name": "Self-raising flour",
+        "percent": 100
+      },
+      {
+        "name": "Eggs",
+        "percent": 70
+      },
+      {
+        "name": "Milk",
+        "percent": 50
+      },
+      {
+        "name": "Sparkling water",
+        "percent": 50
+      },
+      {
+        "name": "White sugar",
+        "percent": 12
+      },
+      {
+        "name": "Unsalted butter",
+        "percent": 25
+      }
+    ],
+    "extras": []
+  },
+  {
+    "name": "Sourdough Donuts",
+    "itemWeightGrams": "50",
+    "ingredients": [
+      {
+        "name": "Bread flour",
+        "percent": 100
+      },
+      {
+        "name": "Starter",
+        "percent": 25
+      },
+      {
+        "name": "Milk",
+        "percent": 55
+      },
+      {
+        "name": "Eggs",
+        "percent": 10
+      },
+      {
+        "name": "White sugar",
+        "percent": 10
+      },
+      {
+        "name": "Unsalted butter",
+        "percent": 10
+      },
+      {
+        "name": "Salt",
+        "percent": 2
+      }
+    ],
+    "extras": [
+      {
+        "name": "White sugar",
+        "perUnitGrams": 20
+      }
+    ]
+  },
+  {
+    "name": "Sourdough Cinnamon Rolls",
+    "itemWeightGrams": "70",
+    "ingredients": [
+      {
+        "name": "Bread flour",
+        "percent": 100
+      },
+      {
+        "name": "Milk",
+        "percent": 40
+      },
+      {
+        "name": "Starter",
+        "percent": 25
+      },
+      {
+        "name": "Eggs",
+        "percent": 10
+      },
+      {
+        "name": "White sugar",
+        "percent": 10
+      },
+      {
+        "name": "Unsalted butter",
+        "percent": 15
+      },
+      {
+        "name": "Salt",
+        "percent": 2
+      }
+    ],
+    "extras": [
+      {
+        "name": "White sugar",
+        "perUnitGrams": 30
+      },
+      {
+        "name": "Cinnamon",
+        "perUnitGrams": 5
+      },
+      {
+        "name": "Unsalted butter",
+        "perUnitGrams": 15
+      }
+    ]
+  },
+  {
+    "name": "Amaretti cookies",
+    "itemWeightGrams": 15,
+    "ingredients": [
+      {
+        "name": "Almond Flour",
+        "percent": 100
+      },
+      {
+        "name": "White sugar",
+        "percent": 70
+      },
+      {
+        "name": "Eggs",
+        "percent": 1.2
+      }
+    ],
+    "extras": []
+  },
+  {
+    "name": "Chocolate cake",
+    "itemWeightGrams": 1000,
+    "ingredients": [
+      {
+        "name": "Chocolate",
+        "percent": 750
+      },
+      {
+        "name": "Unsalted butter",
+        "percent": 566.7
+      },
+      {
+        "name": "White sugar",
+        "percent": 750
+      },
+      {
+        "name": "Eggs",
+        "percent": 1100
+      },
+      {
+        "name": "All purpose flour",
+        "percent": 100
+      }
+    ],
+    "extras": []
+  },
+  {
+    "name": "Sourdough Shokupan",
+    "itemWeightGrams": 750,
+    "ingredients": [
+      {
+        "name": "Bread flour",
+        "percent": 100
+      },
+      {
+        "name": "Water",
+        "percent": 20
+      },
+      {
+        "name": "Milk",
+        "percent": 30
+      },
+      {
+        "name": "White sugar",
+        "percent": 6
+      },
+      {
+        "name": "Salt",
+        "percent": 2
+      },
+      {
+        "name": "Unsalted butter",
+        "percent": 10
+      },
+      {
+        "name": "Bread flour",
+        "percent": 2.5
+      },
+      {
+        "name": "Milk",
+        "percent": 12.4
+      }
+    ],
+    "extras": []
+  },
+  {
+    "name": "Lemon meringue",
+    "itemWeightGrams": 35,
+    "ingredients": [
+      {
+        "name": "Unsalted butter",
+        "percent": 77
+      },
+      {
+        "name": "Eggs",
+        "percent": 0.85
+      },
+      {
+        "name": "Bread flour",
+        "percent": 100
+      },
+      {
+        "name": "White sugar",
+        "percent": 77
+      },
+      {
+        "name": "Lemon",
+        "percent": 0.6
+      },
+      {
+        "name": "Egg white",
+        "percent": 0.85
+      },
+      {
+        "name": "Egg yolk",
+        "percent": 0.85
+      }
+    ],
+    "extras": []
+  }
+]

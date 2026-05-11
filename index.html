@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Brood Bakery Calculator</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header-container">
+      <h1 class="header-title">-= BROOD =-</h1>
+      <div class="header-subtitle">Bakery-Calculator</div>
+    </div>
+
+    <div class="tabs">
+      <button id="tab-calculator" class="tab-btn active" onclick="switchTab('calculator')">Calculator</button>
+      <button id="tab-builder" class="tab-btn" onclick="switchTab('builder')">Recipe Builder</button>
+      <button id="tab-ingredients" class="tab-btn" onclick="switchTab('ingredients')">Ingredients</button>
+    </div>
+
+    <!-- Calculator panel (unchanged UI) -->
+    <div id="panel-calculator" class="tab-panel active">
+      <label for="recipe-select">Choose Recipe:</label>
+      <select id="recipe-select" onchange="handleRecipeChange()"></select>
+      <br />
+      <label>Item weight (g):</label>
+      <input type="number" id="item-weight" class="input-short" oninput="handleItemWeightChange()"><br />
+      <label for="input-type">Input Type:</label>
+      <select id="input-type" onchange="handleRecipeChange()">
+        <option value="dough">Total Dough Weight</option>
+        <option value="flour">Flour Only</option>
+      </select><br />
+      <input type="number" id="input-grams" value="1000" oninput="handleRecipeChange()"> g
+
+      <h3>Ingredients</h3>
+      <table id="ingredients-table">
+        <thead>
+          <tr><th>Ingredient</th><th>Amount (g)</th><th>Baker's %</th><th>Brand</th><th>Cost (THB)</th></tr>
+        </thead><tbody></tbody>
+      </table>
+
+      <h3>Extras (per item)</h3>
+      <table id="extras-table">
+        <thead>
+          <tr><th>Ingredient</th><th>Grams per Item</th><th>Brand</th><th>Cost per Item (THB)</th></tr>
+        </thead><tbody></tbody>
+      </table>
+
+      <h2>Total Ingredient Cost: <span id="total-cost">0</span> THB</h2>
+
+      <p>Number of Items:
+        <input type="number" id="number-of-items" class="input-short" oninput="handleItemsChange()">
+      </p>
+
+      <p><h2>Cost per Item: <span id="cost-per-item">0</span> THB</h2></p>
+
+      <div class="suggested-column">
+        <label>Electricity/month:
+          <input type="number" id="electricity" value="3600" class="input-short" oninput="handleRecipeChange()"> THB</label>
+        <label>Water/month:
+          <input type="number" id="water" value="200" class="input-short" oninput="handleRecipeChange()"> THB</label>
+        <label>Gas/month:
+          <input type="number" id="gas" value="430" class="input-short" oninput="handleRecipeChange()"></label>
+        <label>Work days/month:
+          <input type="number" id="work-days" value="20" class="input-short" oninput="handleRecipeChange()"></label>
+        <label>Hours/day:
+          <input type="number" id="hours-day" value="12" class="input-short" oninput="handleRecipeChange()"></label>
+        <label>Hourly wage:
+          <input type="number" id="hour-wage" value="50" class="input-short" oninput="handleRecipeChange()"> THB</label>
+        <label>Employees:
+          <input type="number" id="employees" value="1" class="input-short" oninput="handleRecipeChange()"></label>
+        <label>Items/day:
+          <input type="number" id="items-day" value="175" class="input-short" oninput="handleRecipeChange()"></label>
+        <label>Misc/month:
+          <input type="number" id="misc" value="0" class="input-short" oninput="handleRecipeChange()"> THB</label>
+        <label>Markup multiplier:
+          <input type="number" step="0.1" id="markup" value="2.5" class="input-short" oninput="handleRecipeChange()"></label>
+
+        <h2>Overhead per Item: <span id="overhead-per-item">0</span> THB</h2>
+        <h2>Total Item Cost (Ingredients + Overhead): <span id="total-item-cost">0</span> THB</h2>
+        <h2>Suggested Price per Item: <span id="suggested-price">0</span> THB</h2>
+        <h2>Total Overhead (Batch): <span id="overhead-batch">0</span> THB</h2>
+        <h2>Total Batch Cost (Ingredients + Overhead): <span id="total-batch-cost">0</span> THB</h2>
+        <h2>Suggested Total (Batch): <span id="suggested-total-batch">0</span> THB</h2>
+        <h2>Estimated Profit: <span id="estimated-profit">0</span> THB</h2>
+      </div>
+    </div>
+
+    <!-- Recipe Builder panel (unchanged) -->
+    <div id="panel-builder" class="tab-panel">
+      <h2>Create / Edit Recipe</h2>
+      <label>Recipe name: <input type="text" id="rb-name"></label>
+      <label>Item weight (g): <input type="number" id="rb-item-weight" class="input-short" value="1000"></label>
+      <table id="builder-table">
+        <thead><tr><th>Ingredient name</th><th>Grams</th><th>Baker’s %</th><th></th></tr></thead>
+        <tbody id="builder-body"></tbody>
+      </table>
+      <div id="builder-actions">
+        <button onclick="rbAddRow()">Add ingredient</button>
+        <button onclick="rbClearRows()">Clear all</button>
+        <button onclick="rbSaveLocal()">Save to My Recipes</button>
+        <button onclick="rbExport()">Export My Recipes (JSON)</button>
+        <label>Import JSON <input type="file" id="rb-import" accept="application/json" onchange="rbImport(event)"></label>
+      </div>
+      <div class="muted" id="rb-summary"></div>
+    </div>
+
+    <!-- Ingredients Editor panel with same inline wiring -->
+    <div id="panel-ingredients" class="tab-panel">
+      <h2>Ingredients & Prices</h2>
+      <div class="muted">Add/edit ingredients with brands and THB/kg. Your changes are saved locally and merged with the base DB.</div>
+
+      <div class="editor-row">
+        <label>Ingredient
+          <input list="ingredient-list" id="ie-ingredient" placeholder="e.g., Bread flour">
+          <datalist id="ingredient-list"></datalist>
+        </label>
+        <label>Brand
+          <input id="ie-brand" placeholder="e.g., La Masia">
+        </label>
+        <label>THB per kg
+          <input type="number" step="0.01" id="ie-price" class="input-short" placeholder="0">
+        </label>
+        <button onclick="ieAddOrUpdate()">Add / Update</button>
+      </div>
+
+      <h3>Current (merged) prices</h3>
+      <table id="ie-table">
+        <thead>
+          <tr><th>Ingredient</th><th>Brand</th><th>THB/kg</th><th></th></tr>
+        </thead><tbody></tbody>
+      </table>
+
+      <div class="muted">Import/Export only affects your local overrides (not the base DB).</div>
+      <div class="editor-actions">
+        <button onclick="ieExport()">Export My Prices (JSON)</button>
+        <label>Import My Prices
+          <input type="file" id="ie-import" accept="application/json" onchange="ieImport(event)">
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <script src="calculator.js"></script>
+  <script src="recipeEditor.js"></script>
+  <script src="ingredientsEditor.js"></script>
+</body>
+</html>
