@@ -44,7 +44,10 @@
     const rows = [];
     Object.keys(merged).sort().forEach(ing => {
       const brands = merged[ing] || {};
-      Object.keys(brands).sort().forEach(brand => {
+      Object.keys(brands)
+        .filter(brand => typeof brands[brand] === 'number')
+        .sort()
+        .forEach(brand => {
         rows.push({ ing, brand, price: brands[brand] });
       });
     });

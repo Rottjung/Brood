@@ -72,11 +72,56 @@ function loadBrandCache() {
   try {
     const raw = localStorage.getItem(BRAND_CACHE_KEY);
     const obj = raw ? JSON.parse(raw) : {};
-    return { ingredient: obj.ingredient || {}, extra: obj.extra || {} };
-  } catch { return { ingredient: {}, extra: {} }; }
+    return { ingredient: obj.ingredient || {}, extra: obj.extra || {}, role: obj.role || {} };
+  } catch { return { ingredient: {}, extra: {}, role: {} }; }
 }
 function saveBrandCache() { try { localStorage.setItem(BRAND_CACHE_KEY, JSON.stringify(brandCache)); } catch {} }
 const brandCache = loadBrandCache();
+
+function priceMeta(name) {
+  const meta = prices[name]?._meta;
+  return meta && typeof meta === 'object' ? meta : {};
+}
+
+function brandNames(name) {
+  return Object.keys(prices[name] || {})
+    .filter(brand => typeof prices[name]?.[brand] === 'number');
+}
+
+function priceFor(name, brand) {
+  return prices[name]?.[brand] || 0;
+}
+
+function canBeRole(name, role) {
+  const canBe = priceMeta(name).canBe;
+  return Array.isArray(canBe) && canBe.includes(role);
+}
+
+function roleOptions(role) {
+  const options = Object.keys(prices || {})
+    .filter(name => name !== role && canBeRole(name, role))
+    .sort();
+  return options.length ? ['None', ...options] : [];
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function brandLabel(brand) {
+  return brand || 'Default';
+}
+
+function optionsHtml(values, labelFn = value => value) {
+  return values
+    .map(value => `<option value="${escapeHtml(value)}">${escapeHtml(labelFn(value))}</option>`)
+    .join('');
+}
 
 function chooseBrand(kind, name, brands) {
   const cache = kind === 'ingredient' ? brandCache.ingredient : brandCache.extra;
@@ -84,11 +129,37 @@ function chooseBrand(kind, name, brands) {
   if (cached && brands.includes(cached)) return cached;
 
   if (kind === 'ingredient') {
-    const paidBrand = brands.find(brand => (prices[name]?.[brand] || 0) > 0);
+    const paidBrand = brands.find(brand => priceFor(name, brand) > 0);
     if (paidBrand) return paidBrand;
   }
 
   return brands[0] || "";
+}
+
+function roleSelection(role) {
+  const options = roleOptions(role);
+  const cached = brandCache.role[role] || {};
+  const legacyIngredient = brandCache.ingredient[role];
+  const defaultIngredient = priceMeta(role).defaultIngredient;
+  const firstPaidIngredient = options.find(name => brandNames(name).some(brand => priceFor(name, brand) > 0));
+  const ingredient = options.includes(cached.ingredient)
+    ? cached.ingredient
+    : (options.includes(legacyIngredient)
+      ? legacyIngredient
+      : (options.includes(defaultIngredient) ? defaultIngredient : (firstPaidIngredient || options[0])));
+  const brands = brandNames(ingredient);
+  const cachedBrands = cached.brands || {};
+  const brand = brands.includes(cachedBrands[ingredient])
+    ? cachedBrands[ingredient]
+    : chooseBrand('ingredient', ingredient, brands);
+
+  brandCache.role[role] = {
+    ingredient,
+    brands: { ...cachedBrands, [ingredient]: brand }
+  };
+  saveBrandCache();
+
+  return { options, ingredient, brands, brand };
 }
 
 function inputNumber(id, fallback = 0) {
@@ -146,22 +217,67 @@ function handleRecipeChange() {
   (recipe.ingredients || []).forEach(ing => {
     const row = document.createElement('tr');
     const amount = flourWeight * (ing.percent / 100);
-    const brands = Object.keys(prices[ing.name] || {});
+    const selectableRole = priceMeta(ing.name).selectsRole || ing.name;
+    const selectableOptions = roleOptions(selectableRole);
+
+    if (selectableOptions.length) {
+      const selection = roleSelection(selectableRole);
+      const pricePerKg = priceFor(selection.ingredient, selection.brand);
+      const cost = pricePerKg * (amount / 1000);
+      totalCost += cost;
+
+      row.innerHTML = `
+        <td>${escapeHtml(ing.name)}</td>
+        <td>${amount.toFixed(1)}</td>
+        <td>${ing.percent}%</td>
+        <td>
+          <select data-type="role" data-role="${escapeHtml(selectableRole)}" data-amount="${amount}">
+            ${optionsHtml(selection.options)}
+          </select>
+          <select data-type="role-brand" data-role="${escapeHtml(selectableRole)}" data-ingredient="${escapeHtml(selection.ingredient)}" data-amount="${amount}">
+            ${optionsHtml(selection.brands, brandLabel)}
+          </select>
+        </td>
+        <td>${cost.toFixed(2)}</td>`;
+      ingTbody.appendChild(row);
+
+      const roleSel = row.querySelector('select[data-type="role"]');
+      const brandSel = row.querySelector('select[data-type="role-brand"]');
+      roleSel.value = selection.ingredient;
+      brandSel.value = selection.brand;
+
+      roleSel.addEventListener('change', () => {
+        const cached = brandCache.role[selectableRole] || {};
+        brandCache.role[selectableRole] = {
+          ingredient: roleSel.value,
+          brands: cached.brands || {}
+        };
+        saveBrandCache();
+        handleRecipeChange();
+      });
+
+      brandSel.addEventListener('change', () => {
+        updateRoleBrand(selectableRole, selection.ingredient, brandSel.value, amount, brandSel.parentElement.nextElementSibling);
+      });
+      return;
+    }
+
+    const brands = brandNames(ing.name);
 
     // brand persistence
     let chosenBrand = chooseBrand('ingredient', ing.name, brands);
     if (chosenBrand) { brandCache.ingredient[ing.name] = chosenBrand; saveBrandCache(); }
 
-    const pricePerKg = prices[ing.name]?.[chosenBrand] || 0;
+    const pricePerKg = priceFor(ing.name, chosenBrand);
     const cost = pricePerKg * (amount / 1000);
     totalCost += cost;
 
     const rowSelect = `<select data-type="ingredient" data-name="${ing.name}" data-amount="${amount}">
-        ${brands.map(b => `<option value="${b}">${b}</option>`).join('')}
+        ${optionsHtml(brands, brandLabel)}
       </select>`;
 
     row.innerHTML = `
-      <td>${ing.name}</td>
+      <td>${escapeHtml(ing.name)}</td>
       <td>${amount.toFixed(1)}</td>
       <td>${ing.percent}%</td>
       <td>${rowSelect}</td>
@@ -178,11 +294,11 @@ function handleRecipeChange() {
   const extraTbody = document.querySelector('#extras-table tbody');
   extraTbody.innerHTML = '';
   (recipe.extras || []).forEach((extra, idx) => {
-    const brands = Object.keys(prices[extra.name] || {});
+    const brands = brandNames(extra.name);
     let chosenBrand = chooseBrand('extra', extra.name, brands);
     if (chosenBrand) { brandCache.extra[extra.name] = chosenBrand; saveBrandCache(); }
 
-    const pricePerKg = prices[extra.name]?.[chosenBrand] || 0;
+    const pricePerKg = priceFor(extra.name, chosenBrand);
     const costPerItem = pricePerKg * (extra.perUnitGrams / 1000);
     const totalExtraCost = costPerItem * itemsPerBatch;
     totalCost += totalExtraCost;
@@ -193,7 +309,7 @@ function handleRecipeChange() {
       <td><input type="number" value="${extra.perUnitGrams}" class="input-short" oninput="updateExtraGrams(${idx}, this.value)"></td>
       <td>
         <select data-type="extra" data-name="${extra.name}" data-amount="${extra.perUnitGrams}">
-          ${brands.map(b => `<option value="${b}">${b}</option>`).join('')}
+          ${optionsHtml(brands, brandLabel)}
         </select>
       </td>
       <td>${costPerItem.toFixed(2)}</td>`;
@@ -230,10 +346,25 @@ function updateBrand(selectEl, type, name, amount, costTd) {
   else brandCache.extra[name] = brand;
   saveBrandCache();
 
-  const price = prices[name]?.[brand] || 0;
+  const price = priceFor(name, brand);
   const cost = price * (amount / 1000);
   costTd.textContent = cost.toFixed(2);
   showPopup(`${name} → ${brand}`);
+  updateTotalCost();
+}
+
+function updateRoleBrand(role, ingredient, brand, amount, costTd) {
+  const cached = brandCache.role[role] || {};
+  brandCache.role[role] = {
+    ingredient,
+    brands: { ...(cached.brands || {}), [ingredient]: brand }
+  };
+  saveBrandCache();
+
+  const price = priceFor(ingredient, brand);
+  const cost = price * (amount / 1000);
+  costTd.textContent = cost.toFixed(2);
+  showPopup(`${role}: ${ingredient} → ${brandLabel(brand)}`);
   updateTotalCost();
 }
 
