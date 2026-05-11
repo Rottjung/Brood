@@ -32,10 +32,11 @@
     "Cottage Farm": 337
   },
   "Filling": {
-    "None": 0,
-    "Chocolate": 250,
-    "Cheese": 500,
-    "Cream": 250
+    "_meta": {
+      "selectsRole": "Filling",
+      "defaultIngredient": "Chocolate"
+    },
+    "None": 0
   },
   "Bread flour": {
     "": 40.17
@@ -68,6 +69,11 @@
     "Estimate": 25
   },
   "Whipcream": {
+    "_meta": {
+      "canBe": [
+        "Filling"
+      ]
+    },
     "": 250
   },
   "White sugar": {
@@ -80,9 +86,19 @@
     "": 20
   },
   "Chocolate": {
+    "_meta": {
+      "canBe": [
+        "Filling"
+      ]
+    },
     "": 250
   },
   "Cheese": {
+    "_meta": {
+      "canBe": [
+        "Filling"
+      ]
+    },
     "": 500
   },
   "Olive oil": {
