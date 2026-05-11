@@ -144,7 +144,7 @@ function rbRefreshAllSelects() {
 }
 
 // Seed rows
-rbAddRow('Bread Flour', 100);
+rbAddRow('Bread flour', 100);
 rbAddRow('Water', 70);
 rbAddRow('Salt', 2);
 

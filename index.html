@@ -24,7 +24,7 @@
       <label for="recipe-select">Choose Recipe:</label>
       <select id="recipe-select" onchange="handleRecipeChange()"></select>
       <br />
-      <label>Item weight (g):</label>
+      <label>Dough weight per item (g):</label>
       <input type="number" id="item-weight" class="input-short" oninput="handleItemWeightChange()"><br />
       <label for="input-type">Input Type:</label>
       <select id="input-type" onchange="handleRecipeChange()">
@@ -53,7 +53,7 @@
         <input type="number" id="number-of-items" class="input-short" oninput="handleItemsChange()">
       </p>
 
-      <p><h2>Cost per Item: <span id="cost-per-item">0</span> THB</h2></p>
+      <h2>Cost per Item: <span id="cost-per-item">0</span> THB</h2>
 
       <div class="suggested-column">
         <label>Electricity/month:
@@ -61,7 +61,7 @@
         <label>Water/month:
           <input type="number" id="water" value="200" class="input-short" oninput="handleRecipeChange()"> THB</label>
         <label>Gas/month:
-          <input type="number" id="gas" value="430" class="input-short" oninput="handleRecipeChange()"></label>
+          <input type="number" id="gas" value="430" class="input-short" oninput="handleRecipeChange()"> THB</label>
         <label>Work days/month:
           <input type="number" id="work-days" value="20" class="input-short" oninput="handleRecipeChange()"></label>
         <label>Hours/day:
@@ -70,7 +70,7 @@
           <input type="number" id="hour-wage" value="50" class="input-short" oninput="handleRecipeChange()"> THB</label>
         <label>Employees:
           <input type="number" id="employees" value="1" class="input-short" oninput="handleRecipeChange()"></label>
-        <label>Items/day:
+        <label>Average items/day:
           <input type="number" id="items-day" value="175" class="input-short" oninput="handleRecipeChange()"></label>
         <label>Misc/month:
           <input type="number" id="misc" value="0" class="input-short" oninput="handleRecipeChange()"> THB</label>
@@ -91,9 +91,9 @@
     <div id="panel-builder" class="tab-panel">
       <h2>Create / Edit Recipe</h2>
       <label>Recipe name: <input type="text" id="rb-name"></label>
-      <label>Item weight (g): <input type="number" id="rb-item-weight" class="input-short" value="1000"></label>
+      <label>Dough weight per item (g): <input type="number" id="rb-item-weight" class="input-short" value="1000"></label>
       <table id="builder-table">
-        <thead><tr><th>Ingredient name</th><th>Grams</th><th>Baker’s %</th><th></th></tr></thead>
+        <thead><tr><th>Ingredient name</th><th>Baker’s %</th><th></th></tr></thead>
         <tbody id="builder-body"></tbody>
       </table>
       <div id="builder-actions">
