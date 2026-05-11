@@ -136,25 +136,27 @@ function chooseBrand(kind, name, brands) {
   return brands[0] || "";
 }
 
-function roleSelection(role) {
+function roleSelection(role, defaultIngredient = '', cacheKey = role) {
   const options = roleOptions(role);
-  const cached = brandCache.role[role] || {};
+  const cached = brandCache.role[cacheKey] || {};
   const legacyIngredient = brandCache.ingredient[role];
-  const defaultIngredient = priceMeta(role).defaultIngredient;
+  const preferredDefault = defaultIngredient || priceMeta(role).defaultIngredient;
   const firstPaidIngredient = options.find(name => brandNames(name).some(brand => priceFor(name, brand) > 0));
-  const ingredient = options.includes(cached.ingredient)
+  const canUseCached = cached.defaultIngredient === preferredDefault && options.includes(cached.ingredient);
+  const ingredient = canUseCached
     ? cached.ingredient
     : (options.includes(legacyIngredient)
       ? legacyIngredient
-      : (options.includes(defaultIngredient) ? defaultIngredient : (firstPaidIngredient || options[0])));
+      : (options.includes(preferredDefault) ? preferredDefault : (firstPaidIngredient || options[0])));
   const brands = brandNames(ingredient);
   const cachedBrands = cached.brands || {};
   const brand = brands.includes(cachedBrands[ingredient])
     ? cachedBrands[ingredient]
     : chooseBrand('ingredient', ingredient, brands);
 
-  brandCache.role[role] = {
+  brandCache.role[cacheKey] = {
     ingredient,
+    defaultIngredient: preferredDefault,
     brands: { ...cachedBrands, [ingredient]: brand }
   };
   saveBrandCache();
@@ -221,7 +223,8 @@ function handleRecipeChange() {
     const selectableOptions = roleOptions(selectableRole);
 
     if (selectableOptions.length) {
-      const selection = roleSelection(selectableRole);
+      const cacheKey = `${recipe.name}:ingredient:${ing.name}`;
+      const selection = roleSelection(selectableRole, ing.defaultIngredient, cacheKey);
       const pricePerKg = priceFor(selection.ingredient, selection.brand);
       const cost = pricePerKg * (amount / 1000);
       totalCost += cost;
@@ -231,10 +234,10 @@ function handleRecipeChange() {
         <td>${amount.toFixed(1)}</td>
         <td>${ing.percent}%</td>
         <td>
-          <select data-type="role" data-role="${escapeHtml(selectableRole)}" data-amount="${amount}">
+          <select data-type="role" data-role="${escapeHtml(selectableRole)}" data-cache-key="${escapeHtml(cacheKey)}" data-amount="${amount}">
             ${optionsHtml(selection.options)}
           </select>
-          <select data-type="role-brand" data-role="${escapeHtml(selectableRole)}" data-ingredient="${escapeHtml(selection.ingredient)}" data-amount="${amount}">
+          <select data-type="role-brand" data-role="${escapeHtml(selectableRole)}" data-cache-key="${escapeHtml(cacheKey)}" data-ingredient="${escapeHtml(selection.ingredient)}" data-amount="${amount}">
             ${optionsHtml(selection.brands, brandLabel)}
           </select>
         </td>
@@ -247,9 +250,10 @@ function handleRecipeChange() {
       brandSel.value = selection.brand;
 
       roleSel.addEventListener('change', () => {
-        const cached = brandCache.role[selectableRole] || {};
-        brandCache.role[selectableRole] = {
+        const cached = brandCache.role[cacheKey] || {};
+        brandCache.role[cacheKey] = {
           ingredient: roleSel.value,
+          defaultIngredient: ing.defaultIngredient || priceMeta(selectableRole).defaultIngredient || '',
           brands: cached.brands || {}
         };
         saveBrandCache();
@@ -257,7 +261,7 @@ function handleRecipeChange() {
       });
 
       brandSel.addEventListener('change', () => {
-        updateRoleBrand(selectableRole, selection.ingredient, brandSel.value, amount, brandSel.parentElement.nextElementSibling);
+        updateRoleBrand(selectableRole, selection.ingredient, brandSel.value, amount, brandSel.parentElement.nextElementSibling, cacheKey);
       });
       return;
     }
@@ -288,6 +292,54 @@ function handleRecipeChange() {
     sel.value = chosenBrand;
     sel.addEventListener('change', () => {
       updateBrand(sel, 'ingredient', ing.name, amount, sel.parentElement.nextElementSibling);
+    });
+  });
+
+  const fillingTbody = document.querySelector('#fillings-table tbody');
+  fillingTbody.innerHTML = '';
+  (recipe.fillings || []).forEach((filling, idx) => {
+    const role = priceMeta(filling.name).selectsRole || filling.role || filling.name;
+    const options = roleOptions(role);
+    const cacheKey = `${recipe.name}:filling:${idx}`;
+    const selection = roleSelection(role, filling.defaultIngredient, cacheKey);
+    const gramsPerItem = parseFloat(filling.perUnitGrams) || 0;
+    const pricePerKg = priceFor(selection.ingredient, selection.brand);
+    const costPerItem = pricePerKg * (gramsPerItem / 1000);
+    totalCost += costPerItem * itemsPerBatch;
+
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${escapeHtml(filling.name)}</td>
+      <td><input type="number" value="${gramsPerItem}" class="input-short" oninput="updateFillingGrams(${idx}, this.value)"></td>
+      <td>
+        <select data-type="filling" data-role="${escapeHtml(role)}" data-cache-key="${escapeHtml(cacheKey)}" data-amount="${gramsPerItem}">
+          ${optionsHtml(options)}
+        </select>
+        <select data-type="filling-brand" data-role="${escapeHtml(role)}" data-cache-key="${escapeHtml(cacheKey)}" data-ingredient="${escapeHtml(selection.ingredient)}" data-amount="${gramsPerItem}">
+          ${optionsHtml(selection.brands, brandLabel)}
+        </select>
+      </td>
+      <td>${costPerItem.toFixed(2)}</td>`;
+    fillingTbody.appendChild(row);
+
+    const roleSel = row.querySelector('select[data-type="filling"]');
+    const brandSel = row.querySelector('select[data-type="filling-brand"]');
+    roleSel.value = selection.ingredient;
+    brandSel.value = selection.brand;
+
+    roleSel.addEventListener('change', () => {
+      const cached = brandCache.role[cacheKey] || {};
+      brandCache.role[cacheKey] = {
+        ingredient: roleSel.value,
+        defaultIngredient: filling.defaultIngredient || priceMeta(role).defaultIngredient || '',
+        brands: cached.brands || {}
+      };
+      saveBrandCache();
+      handleRecipeChange();
+    });
+
+    brandSel.addEventListener('change', () => {
+      updateRoleBrand(role, selection.ingredient, brandSel.value, gramsPerItem, brandSel.parentElement.nextElementSibling, cacheKey);
     });
   });
 
@@ -353,10 +405,11 @@ function updateBrand(selectEl, type, name, amount, costTd) {
   updateTotalCost();
 }
 
-function updateRoleBrand(role, ingredient, brand, amount, costTd) {
-  const cached = brandCache.role[role] || {};
-  brandCache.role[role] = {
+function updateRoleBrand(role, ingredient, brand, amount, costTd, cacheKey = role) {
+  const cached = brandCache.role[cacheKey] || {};
+  brandCache.role[cacheKey] = {
     ingredient,
+    defaultIngredient: cached.defaultIngredient || priceMeta(role).defaultIngredient || '',
     brands: { ...(cached.brands || {}), [ingredient]: brand }
   };
   saveBrandCache();
@@ -375,6 +428,13 @@ function updateExtraGrams(index, newGrams) {
   handleRecipeChange();
 }
 
+function updateFillingGrams(index, newGrams) {
+  const recipe = recipes[document.getElementById('recipe-select').value];
+  if (!recipe.fillings) recipe.fillings = [];
+  recipe.fillings[index].perUnitGrams = parseFloat(newGrams);
+  handleRecipeChange();
+}
+
 function updateTotalCost() {
   let total = 0;
   document.querySelectorAll('#ingredients-table tbody tr').forEach(row => {
@@ -389,6 +449,12 @@ function updateTotalCost() {
   if (doughPercent <= 0) return;
   const doughWeight = inputType === 'flour' ? grams * (doughPercent / 100) : grams;
   const itemsPerBatch = itemsForDoughWeight(doughWeight, itemWeight);
+
+  document.querySelectorAll('#fillings-table tbody tr').forEach(row => {
+    const costPerItem = parseFloat(row.cells[3].textContent) || 0;
+    total += costPerItem * itemsPerBatch;
+  });
+
   document.querySelectorAll('#extras-table tbody tr').forEach(row => {
     const costPerItem = parseFloat(row.cells[3].textContent) || 0;
     total += costPerItem * itemsPerBatch;
