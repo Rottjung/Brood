@@ -41,7 +41,12 @@ function getUserRecipes() {
   } catch { return []; }
 }
 function setUserRecipes(arr) { localStorage.setItem('brood_user_recipes', JSON.stringify(arr || [])); }
-function mergeRecipes(base, user) { return [...user, ...base]; }
+function mergeRecipes(base, user) {
+  const byName = new Map();
+  (base || []).forEach(recipe => byName.set((recipe.name || '').toLowerCase(), recipe));
+  (user || []).forEach(recipe => byName.set((recipe.name || '').toLowerCase(), recipe));
+  return Array.from(byName.values());
+}
 
 // ===== User prices (for merging with base) =====
 const USER_PRICES_KEY = 'brood_user_prices_v1';
@@ -73,6 +78,33 @@ function loadBrandCache() {
 function saveBrandCache() { try { localStorage.setItem(BRAND_CACHE_KEY, JSON.stringify(brandCache)); } catch {} }
 const brandCache = loadBrandCache();
 
+function chooseBrand(kind, name, brands) {
+  const cache = kind === 'ingredient' ? brandCache.ingredient : brandCache.extra;
+  const cached = cache[name];
+  if (cached && brands.includes(cached)) return cached;
+
+  if (kind === 'ingredient') {
+    const paidBrand = brands.find(brand => (prices[name]?.[brand] || 0) > 0);
+    if (paidBrand) return paidBrand;
+  }
+
+  return brands[0] || "";
+}
+
+function inputNumber(id, fallback = 0) {
+  const value = parseFloat(document.getElementById(id)?.value);
+  return Number.isFinite(value) ? value : fallback;
+}
+
+function itemsForDoughWeight(doughWeight, itemWeight) {
+  return doughWeight > 0 && itemWeight > 0 ? doughWeight / itemWeight : 1;
+}
+
+function formatItemCount(items) {
+  if (!Number.isFinite(items)) return '0';
+  return Math.abs(items - Math.round(items)) < 0.01 ? String(Math.round(items)) : items.toFixed(2);
+}
+
 function populateRecipeSelect() {
   const select = document.getElementById('recipe-select');
   if (!select) return;
@@ -93,18 +125,19 @@ function populateRecipeSelect() {
 function handleRecipeChange() {
   const recipe = recipes[document.getElementById('recipe-select').value];
   const inputType = document.getElementById('input-type').value;
-  const grams = parseFloat(document.getElementById('input-grams').value);
+  const grams = inputNumber('input-grams');
   if (!recipe || isNaN(grams)) return;
 
   const itemWeight = parseFloat(recipe.itemWeightGrams) || 1;
   document.getElementById('item-weight').value = itemWeight;
 
   const doughPercent = totalDoughPercent(recipe);
+  if (doughPercent <= 0) return;
   const flourWeight = (inputType === 'flour') ? grams : grams / (doughPercent / 100);
   const doughWeight = flourWeight * (doughPercent / 100);
 
-  const itemsPerBatch = Math.max(1, doughWeight / itemWeight);
-  document.getElementById('number-of-items').value = itemsPerBatch.toFixed(0);
+  const itemsPerBatch = itemsForDoughWeight(doughWeight, itemWeight);
+  document.getElementById('number-of-items').value = formatItemCount(itemsPerBatch);
 
   const ingTbody = document.querySelector('#ingredients-table tbody');
   ingTbody.innerHTML = '';
@@ -116,11 +149,8 @@ function handleRecipeChange() {
     const brands = Object.keys(prices[ing.name] || {});
 
     // brand persistence
-    let chosenBrand = brandCache.ingredient[ing.name];
-    if (!chosenBrand || !brands.includes(chosenBrand)) {
-      chosenBrand = brands[0] || "";
-      if (chosenBrand) { brandCache.ingredient[ing.name] = chosenBrand; saveBrandCache(); }
-    }
+    let chosenBrand = chooseBrand('ingredient', ing.name, brands);
+    if (chosenBrand) { brandCache.ingredient[ing.name] = chosenBrand; saveBrandCache(); }
 
     const pricePerKg = prices[ing.name]?.[chosenBrand] || 0;
     const cost = pricePerKg * (amount / 1000);
@@ -149,11 +179,8 @@ function handleRecipeChange() {
   extraTbody.innerHTML = '';
   (recipe.extras || []).forEach((extra, idx) => {
     const brands = Object.keys(prices[extra.name] || {});
-    let chosenBrand = brandCache.extra[extra.name];
-    if (!chosenBrand || !brands.includes(chosenBrand)) {
-      chosenBrand = brands[0] || "";
-      if (chosenBrand) { brandCache.extra[extra.name] = chosenBrand; saveBrandCache(); }
-    }
+    let chosenBrand = chooseBrand('extra', extra.name, brands);
+    if (chosenBrand) { brandCache.extra[extra.name] = chosenBrand; saveBrandCache(); }
 
     const pricePerKg = prices[extra.name]?.[chosenBrand] || 0;
     const costPerItem = pricePerKg * (extra.perUnitGrams / 1000);
@@ -191,8 +218,8 @@ function handleItemWeightChange() {
 }
 
 function handleItemsChange() {
-  const items = parseFloat(document.getElementById('number-of-items').value) || 1;
-  const itemWeight = parseFloat(document.getElementById('item-weight').value) || 1;
+  const items = inputNumber('number-of-items', 1) || 1;
+  const itemWeight = inputNumber('item-weight', 1) || 1;
   document.getElementById('input-grams').value = (items * itemWeight).toFixed(1);
   handleRecipeChange();
 }
@@ -225,18 +252,19 @@ function updateTotalCost() {
 
   const recipe = recipes[document.getElementById('recipe-select').value];
   const inputType = document.getElementById('input-type').value;
-  const grams = parseFloat(document.getElementById('input-grams').value) || 0;
+  const grams = inputNumber('input-grams');
   const itemWeight = parseFloat(recipe.itemWeightGrams) || 1;
   const doughPercent = totalDoughPercent(recipe);
+  if (doughPercent <= 0) return;
   const doughWeight = inputType === 'flour' ? grams * (doughPercent / 100) : grams;
-  const itemsPerBatch = Math.max(1, doughWeight / itemWeight);
+  const itemsPerBatch = itemsForDoughWeight(doughWeight, itemWeight);
   document.querySelectorAll('#extras-table tbody tr').forEach(row => {
     const costPerItem = parseFloat(row.cells[3].textContent) || 0;
     total += costPerItem * itemsPerBatch;
   });
 
   document.getElementById('total-cost').textContent = total.toFixed(2);
-  document.getElementById('number-of-items').value = itemsPerBatch.toFixed(0);
+  document.getElementById('number-of-items').value = formatItemCount(itemsPerBatch);
   document.getElementById('cost-per-item').textContent = (total / itemsPerBatch).toFixed(2);
   updateSuggestedPrice(total, recipe);
 }
@@ -250,24 +278,25 @@ function totalDoughPercent(recipe) {
 function updateSuggestedPrice(totalCost, recipe) {
   const itemWeight = parseFloat(recipe.itemWeightGrams) || 1;
   const inputType = document.getElementById('input-type').value;
-  const grams = parseFloat(document.getElementById('input-grams').value) || 0;
+  const grams = inputNumber('input-grams');
   const doughPercent = totalDoughPercent(recipe);
+  if (doughPercent <= 0) return;
   const doughWeight = inputType === 'flour' ? grams * (doughPercent / 100) : grams;
-  const itemsPerBatch = Math.max(1, doughWeight / itemWeight);
-  const elec = parseFloat(document.getElementById('electricity').value);
-  const water = parseFloat(document.getElementById('water').value);
-  const gas = parseFloat(document.getElementById('gas').value);
-  const days = parseFloat(document.getElementById('work-days').value);
-  const hours = parseFloat(document.getElementById('hours-day').value);
-  const wage = parseFloat(document.getElementById('hour-wage').value);
-  const employees = parseFloat(document.getElementById('employees')?.value || 1) || 1;
-  const dailyItems = parseFloat(document.getElementById('items-day').value);
-  const misc = parseFloat(document.getElementById('misc').value);
-  const markup = parseFloat(document.getElementById('markup').value);
+  const itemsPerBatch = itemsForDoughWeight(doughWeight, itemWeight);
+  const elec = inputNumber('electricity');
+  const water = inputNumber('water');
+  const gas = inputNumber('gas');
+  const days = inputNumber('work-days');
+  const hours = inputNumber('hours-day');
+  const wage = inputNumber('hour-wage');
+  const employees = inputNumber('employees', 1) || 1;
+  const dailyItems = inputNumber('items-day');
+  const misc = inputNumber('misc');
+  const markup = inputNumber('markup', 1) || 1;
 
   const monthlyCost = elec + water + gas + (days * hours * wage * employees) + misc;
   const monthlyItems = days * dailyItems;
-  const overheadPerItem = monthlyCost / monthlyItems;
+  const overheadPerItem = monthlyItems > 0 ? monthlyCost / monthlyItems : 0;
 
   document.getElementById('overhead-per-item').textContent = overheadPerItem.toFixed(2);
   const totalPerItem = (totalCost / itemsPerBatch) + overheadPerItem;

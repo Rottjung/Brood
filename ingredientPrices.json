@@ -50,10 +50,22 @@
     "": 3.6
   },
   "Eggs": {
-    "": 5
+    "Estimate": 80
+  },
+  "Egg white": {
+    "Estimate": 40
+  },
+  "Egg yolk": {
+    "Estimate": 40
   },
   "Milk": {
     "": 45
+  },
+  "Starter": {
+    "100% hydration estimate": 22
+  },
+  "Sparkling water": {
+    "Estimate": 25
   },
   "Whipcream": {
     "": 250
@@ -79,5 +91,11 @@
   },
   "Vegetable oil": {
     "": 50
+  },
+  "Cinnamon": {
+    "Estimate": 600
+  },
+  "Lemon": {
+    "Estimate": 120
   }
 }
