@@ -483,11 +483,59 @@
         "percent": 20
       }
     ],
+    "lamination": [
+      {
+        "name": "Unsalted butter",
+        "percent": 50
+      }
+    ],
+    "fillings": [],
+    "extras": []
+  },
+  {
+    "name": "Pain au Chocolat",
+    "itemWeightGrams": 100,
+    "ingredients": [
+      {
+        "name": "All purpose flour",
+        "percent": 100
+      },
+      {
+        "name": "Milk",
+        "percent": 30
+      },
+      {
+        "name": "Water",
+        "percent": 25
+      },
+      {
+        "name": "Unsalted butter",
+        "percent": 10
+      },
+      {
+        "name": "White sugar",
+        "percent": 11
+      },
+      {
+        "name": "Salt",
+        "percent": 2
+      },
+      {
+        "name": "Starter",
+        "percent": 20
+      }
+    ],
+    "lamination": [
+      {
+        "name": "Unsalted butter",
+        "percent": 50
+      }
+    ],
     "fillings": [
       {
         "name": "Filling",
-        "perUnitGrams": 25.25,
-        "defaultIngredient": "Unsalted butter"
+        "perUnitGrams": 10,
+        "defaultIngredient": "Chocolate"
       }
     ],
     "extras": []

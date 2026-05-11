@@ -28,7 +28,7 @@
       <input type="number" id="item-weight" class="input-short" oninput="handleItemWeightChange()"><br />
       <label for="input-type">Input Type:</label>
       <select id="input-type" onchange="handleRecipeChange()">
-        <option value="dough">Total Dough Weight</option>
+        <option value="dough">Base Dough Weight</option>
         <option value="flour">Flour Only</option>
       </select><br />
       <input type="number" id="input-grams" value="1000" oninput="handleRecipeChange()"> g
@@ -37,6 +37,13 @@
       <table id="ingredients-table">
         <thead>
           <tr><th>Ingredient</th><th>Amount (g)</th><th>Baker's %</th><th>Selection / Brand</th><th>Cost (THB)</th></tr>
+        </thead><tbody></tbody>
+      </table>
+
+      <h3>Lamination</h3>
+      <table id="lamination-table">
+        <thead>
+          <tr><th>Ingredient</th><th>Amount (g)</th><th>Baker's %</th><th>Brand</th><th>Cost (THB)</th></tr>
         </thead><tbody></tbody>
       </table>
 
