@@ -80,31 +80,31 @@
     ]
   },
   {
-      "name": "Sourdough FOCACCIA",
-      "itemWeightGrams": 500,
-      "ingredients":[
-          {
-            "name": "Bread flour",
-            "percent": 100
-          },
-          {
-              "name": "Water",
-              "percent": 60
-          },
-          {
-              "name": "Starter",
-              "percent": 20
-          },
-          {
-              "name": "Olive oil",
-              "percent": 10
-          },
-          {
-              "name": "Salt",
-              "percent": 2
-          }
-      ],
-      "extras": []
+    "name": "Sourdough FOCACCIA",
+    "itemWeightGrams": 500,
+    "ingredients": [
+      {
+        "name": "Bread flour",
+        "percent": 100
+      },
+      {
+        "name": "Water",
+        "percent": 60
+      },
+      {
+        "name": "Starter",
+        "percent": 20
+      },
+      {
+        "name": "Olive oil",
+        "percent": 10
+      },
+      {
+        "name": "Salt",
+        "percent": 2
+      }
+    ],
+    "extras": []
   },
   {
     "name": "Brussels Waffles",
@@ -341,6 +341,46 @@
       {
         "name": "Egg yolk",
         "percent": 0.85
+      }
+    ],
+    "extras": []
+  },
+  {
+    "name": "Croissant",
+    "itemWeightGrams": 500,
+    "ingredients": [
+      {
+        "name": "All purpose flour",
+        "percent": 100
+      },
+      {
+        "name": "Milk",
+        "percent": 30
+      },
+      {
+        "name": "Water",
+        "percent": 25
+      },
+      {
+        "name": "Unsalted butter",
+        "percent": 10
+      },
+      {
+        "name": "White sugar",
+        "percent": 11
+      },
+      {
+        "name": "Salt",
+        "percent": 2
+      },
+      {
+        "name": "Filling",
+        "percent": 50,
+        "excludeFromDoughWeight": true
+      },
+      {
+        "name": "Starter",
+        "percent": 20
       }
     ],
     "extras": []
