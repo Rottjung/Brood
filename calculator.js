@@ -96,10 +96,14 @@ function handleRecipeChange() {
   const grams = parseFloat(document.getElementById('input-grams').value);
   if (!recipe || isNaN(grams)) return;
 
-  document.getElementById('item-weight').value = recipe.itemWeightGrams || 1;
-  const flourWeight = (inputType === 'flour') ? grams : grams / (1 + totalExtraPercent(recipe));
+  const itemWeight = parseFloat(recipe.itemWeightGrams) || 1;
+  document.getElementById('item-weight').value = itemWeight;
 
-  const itemsPerBatch = Math.max(1, grams / (recipe.itemWeightGrams || 1));
+  const doughPercent = totalDoughPercent(recipe);
+  const flourWeight = (inputType === 'flour') ? grams : grams / (doughPercent / 100);
+  const doughWeight = flourWeight * (doughPercent / 100);
+
+  const itemsPerBatch = Math.max(1, doughWeight / itemWeight);
   document.getElementById('number-of-items').value = itemsPerBatch.toFixed(0);
 
   const ingTbody = document.querySelector('#ingredients-table tbody');
@@ -220,8 +224,12 @@ function updateTotalCost() {
   });
 
   const recipe = recipes[document.getElementById('recipe-select').value];
-  const itemsPerBatch = Math.max(1,
-    parseFloat(document.getElementById('input-grams').value) / (recipe.itemWeightGrams || 1));
+  const inputType = document.getElementById('input-type').value;
+  const grams = parseFloat(document.getElementById('input-grams').value) || 0;
+  const itemWeight = parseFloat(recipe.itemWeightGrams) || 1;
+  const doughPercent = totalDoughPercent(recipe);
+  const doughWeight = inputType === 'flour' ? grams * (doughPercent / 100) : grams;
+  const itemsPerBatch = Math.max(1, doughWeight / itemWeight);
   document.querySelectorAll('#extras-table tbody tr').forEach(row => {
     const costPerItem = parseFloat(row.cells[3].textContent) || 0;
     total += costPerItem * itemsPerBatch;
@@ -233,14 +241,19 @@ function updateTotalCost() {
   updateSuggestedPrice(total, recipe);
 }
 
-function totalExtraPercent(recipe) {
+function totalDoughPercent(recipe) {
   return (recipe.ingredients || [])
-    .reduce((acc, i) => acc + (i.name.toLowerCase() === 'bread flour' ? 0 : i.percent), 0) / 100;
+    .filter(i => !i.excludeFromDoughWeight)
+    .reduce((acc, i) => acc + (parseFloat(i.percent) || 0), 0);
 }
 
 function updateSuggestedPrice(totalCost, recipe) {
-  const itemWeight = recipe.itemWeightGrams || 1;
-  const itemsPerBatch = Math.max(1, parseFloat(document.getElementById('input-grams').value) / itemWeight);
+  const itemWeight = parseFloat(recipe.itemWeightGrams) || 1;
+  const inputType = document.getElementById('input-type').value;
+  const grams = parseFloat(document.getElementById('input-grams').value) || 0;
+  const doughPercent = totalDoughPercent(recipe);
+  const doughWeight = inputType === 'flour' ? grams * (doughPercent / 100) : grams;
+  const itemsPerBatch = Math.max(1, doughWeight / itemWeight);
   const elec = parseFloat(document.getElementById('electricity').value);
   const water = parseFloat(document.getElementById('water').value);
   const gas = parseFloat(document.getElementById('gas').value);
